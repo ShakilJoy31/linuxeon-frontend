@@ -27,15 +27,15 @@ const StartBuilding = () => {
                 {/* Text Content */}
                 <div className="w-full lg:max-w-[600px] space-y-4 sm:space-y-6 text-center lg:text-left mt-6 lg:mt-0">
                     <Heading className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-extrabold leading-tight">
-                        Start Building Now
+                        Start Sending SMS in Minutes
                     </Heading>
                     <Paragraph className="text-white text-sm sm:text-base md:text-lg leading-relaxed max-w-[90%] md:max-w-full mx-auto lg:mx-0">
-                        Feel free to customize your reports. Utilize our super-table instead of exporting and importing data for over and over.
+                        Launch powerful SMS campaigns instantly. No coding required - just sign up and start engaging with your customers through reliable, high-performance messaging.
                     </Paragraph>
                     <Button onClick={()=> router.push('/pricing')}
                         className="bg-[#1776BB] hover:bg-[#0f5ed1] text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg font-medium flex items-center gap-2 mx-auto lg:mx-0 transition text-sm sm:text-base">
                         <HiSparkles className="text-lg sm:text-xl" />
-                        Start your project
+                        Get Started Free
                     </Button>
                 </div>
 

@@ -7,7 +7,65 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import Link from "next/link";
 import Heading from "../reusable-components/Heading";
 import Paragraph from "../reusable-components/Paragraph";
-import { services } from "@/utils/constant/customSolutions";
+
+
+import serviceImage from "../../assets/Home/custom-service.jpg";
+import serviceImage1 from "../../assets/Service/service-(1).jpg";
+import serviceImage2 from "../../assets/Service/service-(2).jpg";
+import serviceImage3 from "../../assets/Service/service-(3).jpg";
+import serviceImage4 from "../../assets/Service/service-(4).jpg";
+
+// Updated services data for SMS platform
+const services = [
+  {
+    id: "01",
+    title: "Bulk SMS Solutions",
+    description: "Send mass messages instantly with our high-speed bulk SMS platform for marketing campaigns and announcements.",
+    image: serviceImage.src //! Replace with your actual image
+  },
+  {
+    id: "02",
+    title: "Transactional SMS",
+    description: "Reliable OTP, alerts, and notifications with 99.9% delivery rate for critical business communications.",
+    image: serviceImage1.src // Replace with your actual image
+  },
+  {
+    id: "03",
+    title: "SMS API Integration",
+    description: "Seamless integration with your CRM, ERP, or custom applications using our robust SMS API.",
+    image: serviceImage2.src // Replace with your actual image
+  },
+  {
+    id: "04",
+    title: "Two-Way Messaging",
+    description: "Enable interactive conversations with customers through inbound and outbound SMS communication.",
+    image: serviceImage3.src // Replace with your actual image
+  },
+  {
+    id: "05",
+    title: "Scheduled Campaigns",
+    description: "Plan and automate SMS campaigns to reach customers at optimal times for maximum engagement.",
+    image: serviceImage4.src // Replace with your actual image
+  },
+  {
+    id: "06",
+    title: "Personalized SMS",
+    description: "Dynamic content personalization using customer data to increase relevance and response rates.",
+    image: serviceImage.src // Replace with your actual image
+  },
+  {
+    id: "07",
+    title: "SMS Analytics & Reporting",
+    description: "Comprehensive dashboards and reports to track delivery, engagement, and campaign performance.",
+    image: serviceImage.src // Replace with your actual image
+  },
+  {
+    id: "08",
+    title: "Global SMS Coverage",
+    description: "Reach customers worldwide with our extensive network of telecom partners and carriers.",
+    image: serviceImage3.src // Replace with your actual image
+  }
+];
 
 const CustomServices = () => {
   const [activeService, setActiveService] = useState(0);
@@ -16,12 +74,11 @@ const CustomServices = () => {
       {/* Header Section */}
       <div className="text-center mb-16">
         <Heading className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-bold mb-6 text-black dark:text-white">
-          Custom Software{" "}
-          <span className="text-[#1673FF]">Development Services</span>
+          Comprehensive{" "}
+          <span className="text-[#1673FF]">SMS Services</span>
         </Heading>
         <Paragraph className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          We build solid and courageous digital solutions that leave a strong
-          mark on your industry and drive business growth.
+          We provide end-to-end SMS solutions that deliver reliable, scalable, and high-performance messaging for your business communication needs.
         </Paragraph>
       </div>
 
@@ -157,7 +214,7 @@ const CustomServices = () => {
       {/* Explore button */}
       <div className="mt-10 flex justify-center lg:justify-start mb-4 md:mb-0 ">
         <Link href='/service' className="group bg-[#1776BB] gap-x-6 hover:bg-[#0f5ed1] hover:cursor-pointer text-white px-8 py-4 rounded-xl font-medium flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl">
-          Explore All Services
+          View All SMS Features
           <FaArrowRightLong size={20}></FaArrowRightLong>
         </Link>
       </div>

@@ -4,22 +4,51 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import navbarLogo from "@/assets/Logo/navber-logo.png";
+import navbarLogo from "../../../public/ringtel.png";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "../common/ThemeSwitcher";
-import { Menu, X } from "lucide-react";
+import { BarChart3, Globe, Menu, MessageSquare, Users, X } from "lucide-react";
 import LanguageSwitcher from "../reusable-components/LanguageSwitcher";
 
+// const navLinks = [
+//   { name: "Theme", path: "/theme" },
+//   { name: "Projects", path: "/projects" },
+//   { name: "Affiliate", path: "/affiliate" },
+//   { name: "Services", path: "/service" },
+//   { name: "Technology", path: "/technology" },
+//   { name: "B2B", path: "/b2b" },
+//   { name: "Pricing", path: "/pricing" },
+//   { name: "About us", path: "/about-us" },
+//   { name: "FAQ", path: "/faq" },
+// ];
+
 const navLinks = [
-  { name: "Theme", path: "/theme" },
-  { name: "Projects", path: "/projects" },
-  { name: "Affiliate", path: "/affiliate" },
-  { name: "Services", path: "/service" },
-  { name: "Technology", path: "/technology" },
-  { name: "B2B", path: "/b2b" },
-  { name: "Pricing", path: "/pricing" },
-  { name: "About us", path: "/about-us" },
-  { name: "FAQ", path: "/faq" },
+  { 
+    name: "Pricing", 
+    path: "/pricing",
+    icon: <BarChart3 className="w-4 h-4" />
+  },
+ 
+  { 
+    name: "FAQ", 
+    path: "/faq",
+    icon: <Globe className="w-4 h-4" />
+  },
+  { 
+    name: "Affiliate", 
+    path: "/affiliate",
+    icon: <Users className="w-4 h-4" />
+  },
+  { 
+    name: "About", 
+    path: "/about_us",
+    icon: <Users className="w-4 h-4" />
+  },
+  { 
+    name: "Services",
+    path: "/service",
+    icon: <MessageSquare className="w-4 h-4" />
+  },
 ];
 
 export default function PublicNav() {

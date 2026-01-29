@@ -17,28 +17,33 @@ import Paragraph from "../reusable-components/Paragraph";
 const portfolioItems = [
     {
         id: 1,
-        title: "E-commerce Site for Smartphones & Gadgets",
+        title: "E-commerce SMS Campaign Management",
         image: portfolioImage.src,
+        description: "Increased customer engagement by 45%"
     },
     {
         id: 2,
-        title: "POS Application for Clothing Store",
+        title: "Banking Transaction Alerts System",
         image: portfolioImage2.src,
+        description: "99.9% delivery rate for OTP messages"
     },
     {
         id: 3,
-        title: "NFT",
+        title: "Healthcare Appointment Reminders",
         image: portfolioImage3.src,
+        description: "Reduced no-shows by 60%"
     },
     {
         id: 4,
-        title: "E-commerce Site for Smartphones",
+        title: "Logistics Delivery Notifications",
         image: portfolioImage4.src,
+        description: "Real-time tracking updates"
     },
     {
         id: 5,
-        title: "Another Project",
+        title: "Educational Institution Notifications",
         image: portfolioImage5.src,
+        description: "Automated campus alerts system"
     },
 ];
 
@@ -47,14 +52,14 @@ export default function PortfolioSlider() {
         <section className="w-full bg-white dark:bg-black py-12 relative">
             <div className="max-w-full mx-auto">
                 <Heading className="text-3xl text-center md:text-4xl font-bold text-black mb-8 dark:text-white">
-                    Portfolio to <span className="text-blue-600">Explore</span>
+                    Success <span className="text-blue-600">Stories</span>
                 </Heading>
 
                 {/* Slider */}
                 <div className="w-full h-[20px] bg-black dark:bg-gray-500"></div>
 
-                {/* Slider Container with extra padding-bottom for dots */}
-                <div className="pb-10"> {/* Added padding-bottom */}
+                {/* Slider Container */}
+                <div className="pb-10">
                     <Swiper
                         spaceBetween={20}
                         slidesPerView={1.2}
@@ -73,7 +78,7 @@ export default function PortfolioSlider() {
                     >
                         {portfolioItems.map((item) => (
                             <SwiperSlide key={item.id}>
-                                <div className="relative group overflow-hidden shadow-lg mb-4"> {/* Added margin-bottom */}
+                                <div className="relative group overflow-hidden shadow-lg mb-4">
                                     <Image
                                         src={item.image}
                                         alt={item.title}
@@ -85,24 +90,30 @@ export default function PortfolioSlider() {
                                         <Heading className="text-white text-lg font-semibold mb-3">
                                             {item.title}
                                         </Heading>
+                                        <Paragraph className="text-white mb-3">
+                                            {item.description}
+                                        </Paragraph>
                                         <Button className="hover:cursor-pointer text-white px-4 py-2 rounded-lg bg-[#1776BB] transition">
                                             View Case Study
                                         </Button>
                                     </div>
                                 </div>
                                 <Paragraph className="text-[24px] px-2">{item.title}</Paragraph>
+                                <Paragraph className="text-gray-600 dark:text-gray-400 text-sm px-2">
+                                    {item.description}
+                                </Paragraph>
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
 
-                {/* Custom pagination container - positioned absolutely */}
+                {/* Custom pagination container */}
                 <div className="swiper-pagination !relative !mt-4 !bottom-0"></div>
 
-                {/* Mobile Explore All Button */}
+                {/* Explore All Button */}
                 <div className="mt-6 flex justify-center md:justify-end mr-[80px]">
                     <Button className="text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">
-                        Explore All →
+                        View All Case Studies →
                     </Button>
                 </div>
             </div>

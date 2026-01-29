@@ -1,8 +1,6 @@
 import RecentService from "@/components/service/RecentService";
-// import ServiceBanner from "@/components/service/ServiceBanner";
 import ServiceCard from "@/components/service/ServiceCard";
 import givingService from "@/assets/Service/giving-service.jpg"
-// import Button from "@/components/reusable-components/Button";
 import { HiSparkles } from "react-icons/hi";
 import ClientSection from "@/components/service/ClientSection";
 import { generateDynamicMetadata } from "@/metadata/generateMetadata";
@@ -16,74 +14,74 @@ import backgroundImage from '../../../../public/3359736.jpg'
 
 export async function generateMetadata() {
     return generateDynamicMetadata({
-        title: "Tech Element IT | Service",
-        description: "Your Vision Our Code & Technology. Building Software to Solve, Scale, and Succeed. From sparking ideas to driving growth, we guide you through every step of product development.",
-        keywords: ["tech element it", "software development", "custom software",
-            "web development", "app development", "product development",
-            "software solutions", "digital transformation", "scalable software",
-            "tech partners", "MVP development", "SaaS", "full-stack development"],
+        title: "SMS Platform | Services",
+        description: "Powerful SMS solutions for business communication. Send bulk SMS, transactional alerts, and marketing campaigns with 99.9% delivery guarantee.",
+        keywords: ["sms platform", "bulk sms service", "sms api",
+            "transactional sms", "sms marketing", "sms gateway",
+            "two-way sms", "sms solutions", "global sms",
+            "sms provider", "sms campaign", "sms automation", "sms integration"],
     });
 }
 
-// Service data array with different content for each service
+// Service data array with different SMS services
 const servicesData = [
     {
         id: "001",
-        title: "UI/UX Design",
+        title: "Bulk SMS Service",
         items: [
-            "UI/UX Consulting",
-            "UX Research",
-            "Usability Testing",
-            "Wireframing",
-            "Prototyping",
+            "Mass messaging campaigns",
+            "Contact list management",
+            "SMS scheduling",
+            "Delivery reports",
+            "Custom sender IDs",
         ],
         image: givingService.src
     },
     {
         id: "002",
-        title: "Web Development",
+        title: "Transactional SMS",
         items: [
-            "Responsive Web Design",
-            "Frontend Development",
-            "Backend Development",
-            "E-commerce Solutions",
-            "CMS Development",
+            "OTP & authentication",
+            "Alerts & notifications",
+            "Order confirmations",
+            "Appointment reminders",
+            "Delivery updates",
         ],
         image: givingService2.src
     },
     {
         id: "003",
-        title: "Mobile App Development",
+        title: "SMS API Integration",
         items: [
-            "iOS App Development",
-            "Android App Development",
-            "Cross-Platform Apps",
-            "App UI/UX Design",
-            "App Store Optimization",
+            "REST API access",
+            "Webhook support",
+            "SDK libraries",
+            "CRM integration",
+            "Custom development",
         ],
         image: givingService3.src
     },
     {
         id: "004",
-        title: "Cloud Solutions",
+        title: "Two-Way SMS Platform",
         items: [
-            "Cloud Migration",
-            "AWS/Azure/GCP Services",
-            "Serverless Architecture",
-            "Cloud Security",
-            "DevOps Implementation",
+            "Inbound message handling",
+            "Customer response management",
+            "SMS surveys & polls",
+            "Interactive campaigns",
+            "Auto-responders",
         ],
         image: givingService4.src
     },
     {
         id: "005",
-        title: "Digital Marketing",
+        title: "SMS Marketing Solutions",
         items: [
-            "SEO Optimization",
-            "Content Marketing",
-            "Social Media Management",
-            "PPC Campaigns",
-            "Analytics & Reporting",
+            "Campaign management",
+            "A/B testing",
+            "Segmentation tools",
+            "Personalization",
+            "Analytics & reporting",
         ],
         image: givingService5.src
     },
@@ -92,9 +90,13 @@ const servicesData = [
 const ProjectsPage = () => {
     return (
         <div className="mt-16">
-            <BannerComponent backgroundImage={backgroundImage.src} title={'Services'} description={'Our web development service helps you build modern, responsive, and user-friendly websites tailored to your needs.'}></BannerComponent>
-            {/* <ServiceBanner></ServiceBanner> */}
-            <RecentService></RecentService>
+            <BannerComponent 
+                backgroundImage={backgroundImage.src} 
+                title={'SMS Services'} 
+                description={'Powerful SMS solutions for business communication. Send bulk messages, transactional alerts, and marketing campaigns with 99.9% delivery guarantee.'}
+                buttonText="Explore SMS Features"
+            />
+            <RecentService />
             <section className="max-w-[1280px] mx-auto ">
                 {servicesData.map((service, index) => (
                     <ServiceCard
@@ -106,38 +108,39 @@ const ProjectsPage = () => {
                     />
                 ))}
                 <div className="flex justify-center mb-[120px] mt-4 ">
-                    <Link href='/projects'
+                    <Link href='/signup'
                         className="bg-[#1776BB] hover:bg-[#0f5ed1] text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg font-medium flex items-center gap-2 mx-auto lg:mx-0 transition text-sm sm:text-base"
                     >
                         <HiSparkles className="text-lg sm:text-xl" />
-                        Let&apos;s build something
+                        Start Free Trial
                     </Link>
                 </div>
             </section>
             <section className="max-w-[1280px] mx-auto mb-[9px] ">
                 <ClientSection
-                    title="Client: Helping brands to grow and say their success stories to the world"
-                    description="We are a great team of creatives with a strongest capabilities to helping progressive fields achieve their goals. With the best talent on every project done successfully."
+                    title="Client Success: Helping businesses communicate better through SMS"
+                    description="We empower businesses worldwide with reliable SMS solutions. From startups to enterprises, we provide the tools and support to make your SMS communication seamless and effective."
                     tags={[
-                        "Data to Design",
-                        "Creative Thinking",
-
-                        "Design. Test. Repeat.",
-
-                        "Empathy in Action",
-                        "Visual Consistency",
-                        "SEO Optimization",
-                        "Prototyping and Testing",
-                        "Ongoing Refinement",
-                        "Easy Cancellations & Refunds",
-                        "24/7 Customer Support",
-
-                        "Custom Design",
-
-                        "Secure Payment Processing",
-                        "Custom Design",
-                        "Real-time Analytics",
-                        "Portfolio Showcase",
+                        "99.9% Delivery Rate",
+                        "Global Coverage",
+                        "Real-Time Analytics",
+                        "API First Approach",
+                        "24/7 Support",
+                        "GDPR Compliant",
+                        "Bulk Messaging",
+                        "Transactional Alerts",
+                        "Two-Way Conversations",
+                        "SMS Campaigns",
+                        "Scheduled Messages",
+                        "Personalization",
+                        "Delivery Tracking",
+                        "Reporting Dashboard",
+                        "Easy Integration",
+                        "Scalable Infrastructure",
+                        "Multi-Channel Support",
+                        "Developer Friendly",
+                        "Cost Effective",
+                        "Instant Activation",
                     ]}
                 />
             </section>

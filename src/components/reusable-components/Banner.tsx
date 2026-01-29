@@ -1,4 +1,3 @@
-
 import Heading from "../reusable-components/Heading";
 import Paragraph from "../reusable-components/Paragraph";
 import { HiSparkles } from "react-icons/hi";
@@ -15,7 +14,7 @@ export default function BannerComponent({
     backgroundImage,
     title,
     description,
-    buttonText = "Join The Affiliate Program"
+    buttonText = "Explore SMS Platform"
 }: BannerComponentProps) {
     return (
         <section
@@ -49,14 +48,16 @@ export default function BannerComponent({
                             {title}
                         </Heading>
 
-                        <Paragraph className="text-gray-200 text-md sm:text-lg lg:text-xl leading-relaxed font-light">
-                            <AnimatedText
-                                text={description}
-                                loop={false}
-                                speed={0.005}
-                                className="text-gray-200"
-                            />
-                        </Paragraph>
+                        {description && (
+                            <Paragraph className="text-gray-200 text-md sm:text-lg lg:text-xl leading-relaxed font-light">
+                                <AnimatedText
+                                    text={description}
+                                    loop={false}
+                                    speed={0.005}
+                                    className="text-gray-200"
+                                />
+                            </Paragraph>
+                        )}
                     </div>
 
                 </div>

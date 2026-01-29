@@ -1,6 +1,6 @@
 "use client"
 
-import { FaUsers, FaSearch, FaPenNib, FaCode, FaUserCheck, FaCheckCircle } from "react-icons/fa";
+import { FaUsers, FaCheckCircle, FaSms, FaChartLine, FaCogs, FaRocket } from "react-icons/fa";
 import Image from "next/image";
 import meetingRightImage from "@/assets/Technology/12109.jpg";
 import researchImage from "@/assets/Technology/370266-PC0MK1-83-removebg-preview.png";
@@ -13,53 +13,51 @@ import Paragraph from "../reusable-components/Paragraph";
 import { useState } from "react";
 
 export default function MeetingComponent() {
-    const [activeIndex, setActiveIndex] = useState<number | null>(0); // Start with first item expanded
+    const [activeIndex, setActiveIndex] = useState<number | null>(0);
     
     const steps = [
         {
             icon: <FaUsers className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
-            title: "Initial Meeting",
-            description: "We begin with a comprehensive consultation to understand your business goals, target audience, and project requirements. This collaborative session helps us align our development strategy with your vision.",
+            title: "Consultation & Needs Analysis",
+            description: "We start by understanding your business communication needs, target audience, and SMS campaign goals to create a tailored messaging strategy.",
             image: meetingRightImage,
         },
         {
-            icon: <FaSearch className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
-            title: "Research to System analysis",
-            description: "Our team conducts thorough market research and technical analysis to identify the best solutions for your needs. We evaluate technologies, frameworks, and architectures to ensure optimal performance.",
+            icon: <FaSms className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
+            title: "SMS Strategy Planning",
+            description: "Develop a comprehensive SMS marketing strategy including audience segmentation, messaging templates, and campaign scheduling for optimal engagement.",
             image: researchImage,
         },
         {
-            icon: <FaPenNib className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
-            title: "Design via Following Empathy",
-            description: "We create intuitive, user-centered designs that prioritize the end-user experience. Our design process focuses on empathy, accessibility, and creating interfaces that are both beautiful and functional.",
+            icon: <FaCogs className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
+            title: "Platform Setup & Integration",
+            description: "Configure your SMS platform with APIs, webhooks, and integration with your existing CRM, e-commerce, or marketing tools for seamless operation.",
             image: designImage,
         },
         {
-            icon: <FaCode className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
-            title: "Development and Iterated",
-            description: "Our developers build robust, scalable solutions using industry best practices. We follow an iterative approach, regularly testing and refining features to ensure quality and alignment with your requirements.",
+            icon: <FaRocket className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
+            title: "Campaign Launch",
+            description: "Deploy your SMS campaigns with advanced features like personalization, scheduling, and A/B testing to maximize engagement and conversion rates.",
             image: developmentImage,
         },
         {
-            icon: <FaUserCheck className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
-            title: "User Tested and Delivered",
-            description: "We conduct comprehensive user testing to validate functionality and usability. After rigorous QA testing and client approval, we deploy the final product to your production environment.",
+            icon: <FaChartLine className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
+            title: "Performance Monitoring",
+            description: "Track delivery rates, engagement metrics, and ROI with real-time analytics dashboards and automated reporting for continuous optimization.",
             image: testingImage,
         },
         {
             icon: <FaCheckCircle className="text-gray-600 dark:text-gray-300 text-lg sm:text-xl" />,
-            title: "Finalized",
-            description: "We provide ongoing support, maintenance, and optimization services to ensure your solution continues to perform excellently. We also offer training and documentation for your team.",
+            title: "Ongoing Optimization",
+            description: "Regular analysis and refinement of SMS campaigns based on performance data to ensure maximum effectiveness and customer satisfaction.",
             image: finalizedImage,
         },
     ];
 
     const toggleDescription = (index: number) => {
-        // If clicking the already active item, close it. Otherwise, open the clicked one
         setActiveIndex(activeIndex === index ? null : index);
     };
 
-    // Get the currently active image or default to first image
     const currentImage = activeIndex !== null ? steps[activeIndex].image : meetingRightImage;
 
     return (
@@ -67,10 +65,10 @@ export default function MeetingComponent() {
             {/* Heading */}
             <div className="text-center mb-6 sm:mb-8 md:mb-10">
                 <Heading className="text-2xl md:text-3xl lg:text-4xl font-bold dark:text-white text-black">
-                    Our Industry <span className="text-blue-600">Development Expertise</span>
+                    Our SMS Platform <span className="text-blue-600">Implementation Process</span>
                 </Heading>
                 <Paragraph className="text-gray-500 mt-2 sm:mt-3 text-sm sm:text-base">
-                    From concept to completion, we build success through every step
+                    From strategy to successful campaigns, we guide you through every step of SMS implementation
                 </Paragraph>
             </div>
 
@@ -116,7 +114,7 @@ export default function MeetingComponent() {
                                 </div>
                             </div>
 
-                            {/* Mobile Image - Shows below active item */}
+                            {/* Mobile Image */}
                             {activeIndex === idx && (
                                 <div className="md:hidden mt-4 p-4 border-2 border-blue-200 dark:border-blue-800 rounded-xl bg-blue-50/50 dark:bg-blue-900/10">
                                     <div className="relative w-full h-48 sm:h-64 rounded-lg overflow-hidden">
@@ -134,11 +132,11 @@ export default function MeetingComponent() {
                     ))}
                 </div>
 
-                {/* Right Side: Image - Hidden on mobile, shown on desktop */}
+                {/* Right Side: Image */}
                 <div className="hidden md:block relative w-full h-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px]">
                     <Image
                         src={currentImage}
-                        alt={activeIndex !== null ? steps[activeIndex].title : "Industry Expertise"}
+                        alt={activeIndex !== null ? steps[activeIndex].title : "SMS Implementation Process"}
                         fill
                         className="rounded-lg sm:rounded-xl object-cover transition-opacity duration-500"
                         sizes="(max-width: 1024px) 50vw, 600px"

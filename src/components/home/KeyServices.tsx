@@ -11,8 +11,7 @@ import portfolioImage2 from '@/assets/Service/key-service-(2).webp'
 import portfolioImage3 from '@/assets/Service/key-service-(3).webp'
 import { CgArrowBottomRight } from "react-icons/cg";
 import { useState, useEffect } from 'react';
-import { FaArrowLeftLong } from "react-icons/fa6";
-import { FaArrowRightLong } from "react-icons/fa6";
+import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { FiChevronRight } from "react-icons/fi";
 import Heading from "../reusable-components/Heading";
 import Paragraph from "../reusable-components/Paragraph";
@@ -23,62 +22,62 @@ import Marquee from "react-fast-marquee";
 const services = [
     {
         id: 1,
-        title: "E-Commerce Solutions For A Digital-First World",
-        description: "Build Robust, Scalable, And Customer-Centric Online Stores.",
+        title: "Bulk SMS Campaigns",
+        description: "Send thousands of messages instantly with our high-speed bulk SMS platform.",
         image: portfolioImage.src,
     },
     {
         id: 2,
-        title: "Comprehensive School Management System Solutions",
-        description: "Streamline School Operations With Advanced Technology.",
+        title: "Transactional SMS",
+        description: "Reliable OTP, alerts, and notifications with guaranteed delivery.",
         image: portfolioImage1.src,
     },
     {
         id: 3,
-        title: "Reliable Security Services",
-        description: "Ensure Your Digital Assets Remain Safe And Secure.",
+        title: "SMS API Integration",
+        description: "Seamless integration with your existing systems and applications.",
         image: portfolioImage2.src,
     },
     {
         id: 4,
-        title: "Custom Mobile App Development",
-        description: "Create Engaging Mobile Experiences Across iOS and Android Platforms.",
+        title: "Two-Way SMS",
+        description: "Enable customer responses and interactive messaging campaigns.",
         image: portfolioImage3.src,
     },
     {
         id: 5,
-        title: "AI-Powered Business Automation",
-        description: "Leverage Artificial Intelligence To Optimize Your Business Processes.",
+        title: "Scheduled Messaging",
+        description: "Plan and schedule SMS campaigns for optimal delivery times.",
         image: portfolioImage.src,
     },
     {
         id: 6,
-        title: "Cloud Migration & Management",
-        description: "Seamlessly Transition To The Cloud With Expert Guidance.",
+        title: "Personalized SMS",
+        description: "Customize messages with customer names and dynamic content.",
         image: portfolioImage1.src,
     },
     {
         id: 7,
-        title: "Data Analytics & Visualization",
-        description: "Transform Raw Data Into Actionable Business Insights.",
+        title: "SMS Analytics",
+        description: "Track delivery rates, responses, and campaign performance.",
         image: portfolioImage2.src,
     },
     {
         id: 8,
-        title: "UI/UX Design Services",
-        description: "Craft Intuitive And Visually Stunning User Experiences.",
+        title: "Short Code Services",
+        description: "Professional short codes for high-volume messaging.",
         image: portfolioImage3.src,
     },
     {
         id: 9,
-        title: "Digital Marketing Solutions",
-        description: "Boost Your Online Presence With Data-Driven Marketing Strategies.",
+        title: "Global SMS Coverage",
+        description: "Reach customers worldwide with our extensive network.",
         image: portfolioImage.src,
     },
     {
         id: 10,
-        title: "IoT Development Services",
-        description: "Connect Your Business To The Internet of Things Ecosystem.",
+        title: "Compliance Management",
+        description: "Stay compliant with telecom regulations and GDPR.",
         image: portfolioImage1.src,
     },
 ];
@@ -126,11 +125,13 @@ const NavigationButtons = () => {
 
 const ServiceTagsMarquee = () => {
     const serviceTags = [
-        "CREATIVE DESIGN",
-        "UI/UX",
-        "Development", 
-        "MARKETING",
-        "MOTION"
+        "BULK SMS",
+        "TRANSACTIONAL",
+        "API INTEGRATION", 
+        "TWO-WAY",
+        "ANALYTICS",
+        "GLOBAL",
+        "COMPLIANT"
     ];
 
     return (
@@ -168,13 +169,13 @@ export default function KeyServices() {
                         {/* Circle text logo */}
                         <div className="flex items-center gap-3 mb-2">
                             <div className="w-16 h-16 border border-white rounded-full flex items-center justify-center">
-                                <span className="text-sm">T</span>
+                                <span className="text-sm">SMS</span>
                             </div>
                         </div>
 
                         {/* Heading */}
                         <h2 className="text-4xl font-light leading-snug text-white">
-                            <div className="flex gap-x-12 items-center"><span>KEY</span> <span><CgArrowBottomRight size={45}></CgArrowBottomRight></span></div>
+                            <div className="flex gap-x-12 items-center"><span>CORE</span> <span><CgArrowBottomRight size={45}></CgArrowBottomRight></span></div>
                             <span className="font-semibold">Services</span>
                         </h2>
                     </div>
@@ -207,7 +208,7 @@ export default function KeyServices() {
                                         width={500}
                                         height={600}
                                         className="w-full h-[420px] object-cover"
-                                        priority={service.id <= 3} // Prioritize loading first few images
+                                        priority={service.id <= 3}
                                     />
                                     {/* Overlay */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-6 flex flex-col justify-end transition-opacity duration-300 group-hover:bg-black/50">

@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -13,26 +13,26 @@ import Paragraph from "../reusable-components/Paragraph";
 import { Autoplay } from "swiper/modules";
 
 const industries = [
-  { id: 1, name: "Travel & Hospitality", image: swiperImage.src, bg: "bg-gray-400" },
-  { id: 2, name: "Startup", image: swiperImage.src, bg: "bg-green-400" },
-  { id: 3, name: "Finance & Banking", image: swiperImage.src, bg: "bg-teal-400" },
-  { id: 4, name: "E-commerce & Retail", image: swiperImage.src, bg: "bg-gray-200" },
-  { id: 5, name: "Real Estate", image: swiperImage.src, bg: "bg-purple-200" },
-  { id: 6, name: "Education & E-Learning", image: swiperImage.src, bg: "bg-orange-400" },
-  { id: 7, name: "Media & Entertainment", image: swiperImage.src, bg: "bg-blue-400" },
-  { id: 8, name: "Health & Fitness", image: swiperImage.src, bg: "bg-sky-300" },
-  { id: 9, name: "Manufacturing & Logistics", image: swiperImage.src, bg: "bg-green-300" },
-  { id: 10, name: "Food & Beverage", image: swiperImage.src, bg: "bg-red-300" },
-  { id: 11, name: "Automotive", image: swiperImage.src, bg: "bg-yellow-300" },
-  { id: 12, name: "Agriculture", image: swiperImage.src, bg: "bg-lime-300" },
-  { id: 13, name: "Energy & Utilities", image: swiperImage.src, bg: "bg-amber-400" },
-  { id: 14, name: "Telecommunications", image: swiperImage.src, bg: "bg-indigo-300" },
-  { id: 15, name: "Government & Public Sector", image: swiperImage.src, bg: "bg-blue-200" },
-  { id: 16, name: "Non-Profit & Social Services", image: swiperImage.src, bg: "bg-pink-300" },
-  { id: 17, name: "Legal Services", image: swiperImage.src, bg: "bg-purple-300" },
-  { id: 18, name: "Construction", image: swiperImage.src, bg: "bg-orange-300" },
-  { id: 19, name: "Beauty & Cosmetics", image: swiperImage.src, bg: "bg-fuchsia-300" },
-  { id: 20, name: "Sports & Recreation", image: swiperImage.src, bg: "bg-emerald-400" }
+  { id: 1, name: "E-commerce", image: swiperImage.src, bg: "bg-gray-400", description: "Order updates & promotions" },
+  { id: 2, name: "Healthcare", image: swiperImage.src, bg: "bg-green-400", description: "Appointment reminders" },
+  { id: 3, name: "Banking", image: swiperImage.src, bg: "bg-teal-400", description: "OTP & alerts" },
+  { id: 4, name: "Education", image: swiperImage.src, bg: "bg-gray-200", description: "Campus notifications" },
+  { id: 5, name: "Logistics", image: swiperImage.src, bg: "bg-purple-200", description: "Delivery tracking" },
+  { id: 6, name: "Restaurants", image: swiperImage.src, bg: "bg-orange-400", description: "Reservation confirmations" },
+  { id: 7, name: "Real Estate", image: swiperImage.src, bg: "bg-blue-400", description: "Property alerts" },
+  { id: 8, name: "Travel", image: swiperImage.src, bg: "bg-sky-300", description: "Booking confirmations" },
+  { id: 9, name: "Retail", image: swiperImage.src, bg: "bg-green-300", description: "Promotional offers" },
+  { id: 10, name: "SaaS", image: swiperImage.src, bg: "bg-red-300", description: "Account notifications" },
+  { id: 11, name: "Insurance", image: swiperImage.src, bg: "bg-yellow-300", description: "Policy updates" },
+  { id: 12, name: "Automotive", image: swiperImage.src, bg: "bg-lime-300", description: "Service reminders" },
+  { id: 13, name: "Government", image: swiperImage.src, bg: "bg-amber-400", description: "Public alerts" },
+  { id: 14, name: "Non-Profit", image: swiperImage.src, bg: "bg-indigo-300", description: "Donation appeals" },
+  { id: 15, name: "Fitness", image: swiperImage.src, bg: "bg-blue-200", description: "Class reminders" },
+  { id: 16, name: "Events", image: swiperImage.src, bg: "bg-pink-300", description: "Ticket confirmations" },
+  { id: 17, name: "Telecom", image: swiperImage.src, bg: "bg-purple-300", description: "Service updates" },
+  { id: 18, name: "Manufacturing", image: swiperImage.src, bg: "bg-orange-300", description: "Supply alerts" },
+  { id: 19, name: "Beauty", image: swiperImage.src, bg: "bg-fuchsia-300", description: "Appointment alerts" },
+  { id: 20, name: "Entertainment", image: swiperImage.src, bg: "bg-emerald-400", description: "Event notifications" }
 ];
 
 const IndustryExpertise = () => {
@@ -43,10 +43,10 @@ const IndustryExpertise = () => {
         {/* Heading */}
         <div className="text-center">
           <Heading className="text-2xl md:text-3xl lg:text-4xl font-bold">
-            Our Industry <span className="text-blue-500">Expertise</span>
+            SMS Solutions For <span className="text-blue-500">Every Industry</span>
           </Heading>
           <Paragraph className="text-gray-700 dark:text-gray-300 mt-2 max-w-2xl mx-auto">
-            Our deep understanding of diverse industries empowers us to design customized software solutions.
+            Powering communication across diverse sectors with reliable SMS solutions tailored to specific industry needs
           </Paragraph>
         </div>
 
@@ -87,6 +87,9 @@ const IndustryExpertise = () => {
                   <Heading className="text-xs md:text-sm font-medium text-white drop-shadow h-4 flex flex-col justify-end">
                     {item.name}
                   </Heading>
+                  <Paragraph className="text-xs text-white/80 mt-1">
+                    {item.description}
+                  </Paragraph>
 
                 </div>
               )}

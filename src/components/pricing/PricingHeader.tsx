@@ -8,162 +8,169 @@ import Paragraph from "../reusable-components/Paragraph";
 import PricingCard from "./PricingCard";
 
 export default function PricingHeader() {
-    const [selectedCategory, setSelectedCategory] = useState<string>('All Categories');
+    const [selectedCategory, setSelectedCategory] = useState<string>('All Plans');
     
-    const categories = ['All Categories', 'Basic Plan', 'Pro Plan', 'Enterprise', 'Starter', 'Business', 'Mobile Pro', 'Design Expert', 'Tech Plus'];
+    const categories = ['All Plans', 'Startup', 'Business', 'Enterprise', 'Pay As You Go', 'Non-Profit', 'Agency', 'Developer', 'Reseller'];
 
     const pricingPlans = [
         {
-            discountLabel: "50% Off",
-            title: "Basic Plan",
-            externalLink: "http://proyojonsober.com.bd",
-            price: "$9.99",
-            period: "month",
-            features: [
-                "10 projects",
-                "5 team members",
-                "Basic analytics",
-                "Email support",
-            ],
-            extraLinks: [
-                { label: "Sher Hosting - 1000" },
-                { label: "VPS Hosting - 2500" },
-                { label: "AWS Hosting - 3500" },
-            ]
-        },
-        {
-            discountLabel: "50% Off",
-            title: "Pro Plan",
-            externalLink: "https://kryinternational.com",
-            price: "$19.99",
-            period: "month",
-            features: [
-                "Unlimited projects",
-                "10 team members",
-                "Advanced analytics",
-                "Priority support",
-                "API access"
-            ],
-            extraLinks: [
-                { label: "Sher Hosting - 1000" },
-                { label: "VPS Hosting - 2500" },
-                { label: "AWS Hosting - 3500" },
-            ]
-        },
-        {
-            discountLabel: "50% Off",
-            title: "Enterprise",
-            externalLink: "https://iconicticket.com",
-            price: "$49.99",
-            period: "month",
-            features: [
-                "Unlimited projects",
-                "Unlimited members",
-                "Advanced analytics",
-                "24/7 support",
-                "API access",
-                "Custom integrations"
-            ],
-            extraLinks: [
-                { label: "Sher Hosting - 1000" },
-                { label: "VPS Hosting - 2500" },
-                { label: "AWS Hosting - 3500" },
-            ]
-        },
-        {
-            discountLabel: "50% Off",
-            title: "Starter",
-            externalLink: "https://brack.school.techelementbd.com",
-            price: "$4.99",
-            period: "month",
-            features: [
-                "3 projects",
-                "2 team members",
-                "Basic analytics",
-                "Community support"
-            ],
-            extraLinks: [
-                { label: "Sher Hosting - 1000" },
-                { label: "VPS Hosting - 2500" },
-                { label: "AWS Hosting - 3500" },
-            ]
-        },
-        {
-            discountLabel: "50% Off",
-            title: "Business",
+            discountLabel: "20% Off Annual",
+            title: "Startup Plan",
             externalLink: "",
-            price: "$29.99",
+            price: "$49",
             period: "month",
             features: [
-                "Unlimited projects",
-                "20 team members",
-                "Advanced analytics",
-                "Priority support",
-                "API access",
-                "Custom reports"
+                "10,000 SMS/month",
+                "Basic API Access",
+                "Web Dashboard",
+                "Email Support",
+                "Delivery Reports",
+                "SMS Templates"
             ],
             extraLinks: [
-                { label: "Sher Hosting - 1000" },
-                { label: "VPS Hosting - 2500" },
-                { label: "AWS Hosting - 3500" },
+                { label: "Global Coverage" },
+                { label: "99.9% Uptime" },
+                { label: "24/7 Monitoring" },
+            ]
+        },
+        {
+            discountLabel: "Most Popular",
+            title: "Business Plan",
+            externalLink: "",
+            price: "$99",
+            period: "month",
+            features: [
+                "50,000 SMS/month",
+                "Full API Access",
+                "Priority Support",
+                "Two-Way SMS",
+                "Scheduled Campaigns",
+                "Advanced Analytics"
+            ],
+            extraLinks: [
+                { label: "Dedicated Account Manager" },
+                { label: "SLA: 99.9%" },
+                { label: "Bulk Import Tools" },
+            ]
+        },
+        {
+            discountLabel: "Custom Pricing",
+            title: "Enterprise",
+            externalLink: "",
+            price: "Custom",
+            period: "quote",
+            features: [
+                "Unlimited SMS Volume",
+                "Dedicated Short Code",
+                "24/7 Phone Support",
+                "Custom Integrations",
+                "Advanced Security",
+                "SMS Gateway"
+            ],
+            extraLinks: [
+                { label: "Dedicated Support Team" },
+                { label: "Custom SLAs Available" },
+                { label: "Enterprise Security" },
+            ]
+        },
+        {
+            discountLabel: "Flexible",
+            title: "Pay As You Go",
+            externalLink: "",
+            price: "$0.01",
+            period: "per SMS",
+            features: [
+                "No Monthly Commitment",
+                "Pay Only For What You Use",
+                "Real-Time Billing",
+                "All API Features",
+                "Basic Support",
+                "Usage Dashboard"
+            ],
+            extraLinks: [
+                { label: "No Contract Required" },
+                { label: "Instant Activation" },
+                { label: "Volume Discounts" },
             ]
         },
         {
             discountLabel: "30% Off",
-            title: "Mobile Pro",
+            title: "Non-Profit",
             externalLink: "",
-            price: "$24.99",
+            price: "$29",
             period: "month",
             features: [
-                "15 projects",
-                "8 team members",
-                "Mobile analytics",
-                "Priority support",
-                "Mobile SDK access"
+                "25,000 SMS/month",
+                "Non-Profit Discount",
+                "Priority Routing",
+                "Compliance Assistance",
+                "Donor Management Tools",
+                "Basic Analytics"
             ],
             extraLinks: [
-                { label: "Sher Hosting - 1000" },
-                { label: "VPS Hosting - 2500" },
-                { label: "AWS Hosting - 3500" },
+                { label: "501(c)(3) Verification Required" },
+                { label: "Charity Tools Included" },
+                { label: "Volunteer Management" },
             ]
         },
         {
-            discountLabel: "25% Off",
-            title: "Design Expert",
+            discountLabel: "Agency Discount",
+            title: "Agency",
             externalLink: "",
-            price: "$34.99",
+            price: "$199",
             period: "month",
             features: [
-                "25 projects",
-                "12 team members",
-                "Design analytics",
-                "Design templates",
-                "Premium support"
+                "100,000 SMS/month",
+                "Multi-Client Dashboard",
+                "White Label Option",
+                "Client Reporting Tools",
+                "API Rate Limit: 1000/min",
+                "Bulk Campaign Management"
             ],
             extraLinks: [
-                { label: "Sher Hosting - 1000" },
-                { label: "VPS Hosting - 2500" },
-                { label: "AWS Hosting - 3500" },
+                { label: "White Label Available" },
+                { label: "Client Management Tools" },
+                { label: "Agency Support Portal" },
             ]
         },
         {
-            discountLabel: "40% Off",
-            title: "Tech Plus",
+            discountLabel: "Developer Friendly",
+            title: "Developer",
             externalLink: "",
-            price: "$39.99",
+            price: "$79",
             period: "month",
             features: [
-                "30 projects",
-                "15 team members",
-                "Advanced analytics",
-                "Tech support",
-                "API access",
-                "Custom integrations"
+                "30,000 SMS/month",
+                "Full API & Webhooks",
+                "SDK Libraries",
+                "Developer Documentation",
+                "Test Environment",
+                "Sandbox Mode"
             ],
             extraLinks: [
-                { label: "Sher Hosting - 1000" },
-                { label: "VPS Hosting - 2500" },
-                { label: "AWS Hosting - 3500" },
+                { label: "All Programming Languages" },
+                { label: "Webhook Support" },
+                { label: "GitHub Integration" },
+            ]
+        },
+        {
+            discountLabel: "Wholesale Pricing",
+            title: "Reseller",
+            externalLink: "",
+            price: "$299",
+            period: "month",
+            features: [
+                "250,000 SMS/month",
+                "Full White Label Solution",
+                "Reseller Dashboard",
+                "Sub-Account Management",
+                "Branded Portal",
+                "Reseller Support"
+            ],
+            extraLinks: [
+                { label: "Full White Labeling" },
+                { label: "Revenue Share Options" },
+                { label: "Reseller Training" },
             ]
         }
     ];
@@ -172,7 +179,7 @@ export default function PricingHeader() {
     const filteredPricingPlans = useMemo(() => {
         console.log("Selected Category:", selectedCategory);
         
-        if (selectedCategory === 'All Categories') {
+        if (selectedCategory === 'All Plans') {
             const allPlans = pricingPlans;
             console.log("Showing all plans:", allPlans.length);
             return allPlans;
@@ -212,14 +219,14 @@ export default function PricingHeader() {
             {/* Small pill text */}
             <div className="inline-block mb-3 sm:mb-4">
                 <span className="text-xs sm:text-sm font-medium px-3 py-1 sm:px-4 sm:py-1 border border-gray-300 rounded-full">
-                    Boost your productivity
+                    Transparent SMS Pricing
                 </span>
             </div>
 
             {/* Main heading */}
             <Heading>
                 <AnimatedText
-                    text="Our Pricing Plans"
+                    text="SMS Service Pricing Plans"
                     loop={true}
                     loopDelay={5}
                     className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold text-[#0A0A33] dark:text-white mb-3 sm:mb-4"
@@ -229,7 +236,7 @@ export default function PricingHeader() {
             {/* Subtitle */}
             <Paragraph className="text-gray-700 dark:text-gray-300 max-w-md sm:max-w-xl md:max-w-2xl mx-auto text-sm sm:text-base md:text-lg">
                 <AnimatedText
-                    text='Effortlessly turn your ideas into a fully functional, responsive, no-code SaaS website in just minutes with the set of free components for Framer.'
+                    text='Choose the perfect SMS plan for your business needs. All plans include 99.9% delivery guarantee, real-time analytics, and 24/7 support.'
                     loop={false}
                     speed={0.005}
                 />
@@ -265,7 +272,7 @@ export default function PricingHeader() {
                             No plans found for {selectedCategory}
                         </p>
                         <Button
-                            onClick={() => setSelectedCategory('All Categories')}
+                            onClick={() => setSelectedCategory('All Plans')}
                             className="mt-4 bg-[#1776BB] text-white px-6 py-2 rounded-lg hover:bg-[#1466a3] transition-colors"
                         >
                             Show All Plans

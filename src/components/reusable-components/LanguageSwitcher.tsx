@@ -150,7 +150,7 @@ export default function LanguageSwitcher() {
                 <input
                   type="text"
                   placeholder="Search languages..."
-                  className="w-full pl-6 py-3 text-sm bg-white dark:bg-gray-800 rounded-md outline-none transition-colors duration-200 text-black"
+                  className="w-full pl-6 py-3 text-sm bg-white dark:bg-gray-800 rounded-md outline-none transition-colors duration-200 text-black dark:text-white "
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   autoFocus={true}

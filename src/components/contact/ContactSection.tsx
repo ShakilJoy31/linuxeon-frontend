@@ -291,8 +291,8 @@ export default function ContactSection() {
                 <p className="font-semibold flex items-center gap-2">
                   <Mail className="w-4 h-4 text-[#1776BB]" /> Email
                 </p>
-                <p>techelementit@gmail.com</p>
-                <p>techelementit@gmail.com</p>
+                <p>srs-tech@gmail.com</p>
+                <p>srs-tech.support@gmail.com</p>
               </div>
 
               <div>

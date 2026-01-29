@@ -34,7 +34,7 @@ export default function TrustedByTeam() {
   return (
     <section className="bg-white dark:bg-cyan-500 py-10 overflow-hidden h-[279px] mb-[6px] ">
       <Heading className="text-center text-gray-500 dark:text-black text-[16px] mb-[50px] font-bold">
-        Trusted by teams at
+        Trusted by businesses worldwide
       </Heading>
 
       <div className='slider'>
