@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { MdHelp, MdInfo } from "react-icons/md";
 import { FiArrowRight } from "react-icons/fi";
-import footerLogo from "@/assets/Home/navbarLogo.png";
+import footerLogo from "../../../public/The_Logo/linuxeon_logo.png";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -21,7 +21,7 @@ const PublicFooter = () => {
   const { translate } = useCustomTranslator();
   return (
     <footer className="bg-[#FD6801] text-white py-8 px-4 lg:px-10">
-      <div className="max-w-[1280px] mx-auto w-full">
+      <div className="container mx-auto w-full">
         <div className="flex flex-col lg:flex-row justify-between">
           {/* Newsletter Section */}
           <div className="mb-8 w-full lg:w-auto">

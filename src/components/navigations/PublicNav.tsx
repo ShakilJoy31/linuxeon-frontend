@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import navbarLogo from "../../../public/ringtel.png";
+import navbarLogo from "../../../public/The_Logo/linuxeon_logo.png";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "../common/ThemeSwitcher";
 import { BarChart3, Globe, Menu, MessageSquare, Users, X } from "lucide-react";
@@ -40,10 +40,15 @@ const navLinks = [
     icon: <Users className="w-4 h-4" />
   },
   { 
-    name: "About", 
-    path: "/about_us",
+    name: "Contact Us", 
+    path: "/contact",
     icon: <Users className="w-4 h-4" />
   },
+  // { 
+  //   name: "About", 
+  //   path: "/about_us",
+  //   icon: <Users className="w-4 h-4" />
+  // },
   { 
     name: "Services",
     path: "/service",
@@ -113,7 +118,7 @@ export default function PublicNav() {
             alt="Logo"
             width={180}
             height={70}
-            className=" w-full h-auto"
+            className="w-36 h-auto "
           />
         </div>
 
@@ -138,9 +143,9 @@ export default function PublicNav() {
           <ThemeSwitcher />
           <LanguageSwitcher></LanguageSwitcher>
           <Button
-            onClick={() => router.push("/contact")}
-            className={`${pathname === '/contact' ? 'bg-[#1D9BF0] dark:bg-[#1D9BF0] px-4 py-1 lg:px-6 rounded-full ' : 'bg-transparent'} text-white text-sm font-medium whitespace-nowrap`}>
-            Contact Us
+            onClick={() => router.push("/login")}
+            className={`${pathname === '/login' ? 'bg-[#1D9BF0] dark:bg-[#1D9BF0] px-4 py-1 lg:px-6 rounded-full ' : 'bg-transparent'} text-white text-sm font-medium whitespace-nowrap`}>
+            Login
           </Button>
         </div>
 
@@ -175,13 +180,13 @@ export default function PublicNav() {
               </Link>
             ))}
             <Link
-              href={'/contact'}
-              className={`px-4 py-3 rounded-md text-sm font-medium ${pathname === '/contact'
+              href={'/login'}
+              className={`px-4 py-3 rounded-md text-sm font-medium ${pathname === '/login'
                 ? "bg-[#1D9BF0] text-white"
                 : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800"
                 }`}
             >
-              Contact Us
+              Login
             </Link>
 
           </div>

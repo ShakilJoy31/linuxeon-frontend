@@ -1,20 +1,40 @@
 import Cookies from "js-cookie";
-// FUNCTION FOR MANAGE COOKIE
+
+type CookieOption = "set" | "get" | "remove";
+
 export const shareWithCookies = (
-  option: "set" | "get" | "remove",
+  option: CookieOption,
   key: string,
   expireByMin: number = 0,
-  value?: unknown
-) => {
+  value?: string
+): string | null | void => {
+  
   if (option === "set") {
-    return (document.cookie = `${key}=${value}; path=/; expires=${new Date(
-      Date.now() + expireByMin * 60 * 1000
-    ).toUTCString()}`);
+    if (!value) {
+      console.error('Value is required for set action');
+      return;
+    }
+    
+    // js-cookie expects days, so convert minutes to days
+    const expiresInDays = expireByMin > 0 ? expireByMin / (24 * 60) : undefined;
+    
+    return Cookies.set(key, value, {
+      expires: expiresInDays, // Days, not Date object
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
   }
+  
   if (option === "get") {
-    return Cookies.get(key) || undefined;
+    const cookieValue = Cookies.get(key);
+    return cookieValue || null;
   }
+  
   if (option === "remove") {
-    return (document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`);
+    Cookies.remove(key, { path: '/' });
+    return;
   }
+  
+  return null;
 };

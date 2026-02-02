@@ -3,7 +3,7 @@ import { FaTelegramPlane, FaWhatsapp, FaInstagram, FaFacebookF, FaPhone, FaSms }
 import { MdLocationOn, MdEmail } from "react-icons/md";
 import Image from "next/image";
 // import siteLogo from "@/assets/Icons/Site-icon.png";
-import siteLogo from "../../../public/ringtel.png";
+import siteLogo from "../../../public/The_Logo/linuxeon_logo.png";
 import Paragraph from "../reusable-components/Paragraph";
 import Heading from "../reusable-components/Heading";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-white dark:bg-black text-gray-700 dark:text-gray-300 border-t border-gray-300 pt-8 md:pt-10">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
+      <div className="container mx-auto px-4 sm:px-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
         {/* Logo & Info */}
         <div className="col-span-2">
           <div className="flex gap-x-[29px] mb-3 md:mb-4">
@@ -20,7 +20,7 @@ export default function Footer() {
               alt="SMS Platform"
               width={160}
               height={60}
-              className="w-48 h-8 md:h-12"
+              className="w-36 h-auto object-contain"
             />
           </div>
 

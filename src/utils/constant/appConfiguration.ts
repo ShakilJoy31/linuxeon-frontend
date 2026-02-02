@@ -2,7 +2,6 @@ interface IConfigurationProps {
   appName: string;
   appCode: string;
   baseUrl: string;
-  baseUrl2: string;
   databaseResetAPI: string;
   favicon: string;
   logo: string;
@@ -18,8 +17,8 @@ const version = "V1.0.0";
 export const appConfiguration: IConfigurationProps = {
   appName: "Tech element",
   appCode: "__t_beta__",
-  baseUrl: "https://tech-element-backend.vercel.app/api/v1",
-  baseUrl2: "https://tech-element-backend.vercel.app/api/v1",
+  baseUrl: "http://localhost:2000",
+    // baseUrl: "https://tech-element-backend.vercel.app/api/v1",
   databaseResetAPI:
     "null",
   favicon: "/iconic.png",
