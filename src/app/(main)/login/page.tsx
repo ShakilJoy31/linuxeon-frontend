@@ -3,7 +3,7 @@ import { generateDynamicMetadata } from "@/metadata/generateMetadata";
 
 export async function generateMetadata() {
   return generateDynamicMetadata({
-    title: "Login |Linuxeon",
+    title: "Login | Linuxeon",
     description: "Linuxeon is a cutting-edge SMS and bulk messaging platform that enables businesses to send transactional, promotional, and OTP messages globally. Reliable, scalable, and feature-rich messaging solutions.",
     keywords: [
       "linuxeon", "sms service", "bulk sms", "sms marketing",

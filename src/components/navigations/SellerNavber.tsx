@@ -2,7 +2,7 @@
 
 import { Bell, MessageSquare, Search, } from "lucide-react";
 import * as Avatar from "@radix-ui/react-avatar";
-import avatar from "@/assets/Products_Image/man.avif";
+import avatar from "@/assets/About-Us/shakil.png";
 
 const SellerNavber = () => {
   return (

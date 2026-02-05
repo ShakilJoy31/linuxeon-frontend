@@ -9,7 +9,7 @@ const fileApi = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["file"],
+      // invalidatesTags: ["file"],
     }),
 
     getGallery: builder.query({
@@ -24,7 +24,7 @@ const fileApi = apiSlice.injectEndpoints({
         url: `/file/delete?key=${encodeURIComponent(key)}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["file"],
+      // invalidatesTags: ["file"],
     }),
   }),
 });

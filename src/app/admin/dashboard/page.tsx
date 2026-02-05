@@ -1,4 +1,5 @@
 
+import AdminDashboard from "@/components/client-components/AdminDashboard";
 import { generateDynamicMetadata } from "@/metadata/generateMetadata";
 
 export async function generateMetadata() {
@@ -17,8 +18,8 @@ export async function generateMetadata() {
 
 const Home = () => {
   return (
-    <div className="bg-[#F4F6F8] dark:bg-gray-600 overflow-x-hidden min-h-screen pt-16 md:pt-4">
-      I have logged in successfully!
+    <div className="">
+     <AdminDashboard></AdminDashboard>
     </div>
   )
 }

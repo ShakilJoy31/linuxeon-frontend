@@ -11,9 +11,9 @@ import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import { useLoginMutation } from '@/redux/api/authentication/projectApi';
 import { appConfiguration } from '@/utils/constant/appConfiguration'; // Import your configuration
 import { shareWithCookies } from '@/utils/helper/shareWithCookies';
+import { useLoginMutation } from '@/redux/api/authentication/authApi';
 
 // Schema validation
 const loginSchema = z.object({
@@ -71,47 +71,19 @@ export default function LoginForm({
     return () => clearInterval(interval);
   }, []);
 
-  //! Set tokens in cookies
-  const setAuthCookies = (accessToken: string, refreshToken: string, rememberMe: boolean = false) => {
-    const tokenName = `${appConfiguration.appCode}token`;
-    const refreshTokenName = `${appConfiguration.appCode}refreshToken`;
-
-    // Convert days to minutes (7 days = 10080 minutes)
-    const accessTokenExpiry = rememberMe ? 10080 : 1440; // 7 days or 1 day in minutes
-    const refreshTokenExpiry = rememberMe ? 43200 : 10080; // 30 days or 7 days in minutes
-
-    // Set access token
-    shareWithCookies("set", tokenName, accessTokenExpiry, accessToken);
-
-    // Set refresh token
-    shareWithCookies("set", refreshTokenName, refreshTokenExpiry, refreshToken);
-
-  };
-
 
   const onSubmit = async (data: LoginFormData) => {
     setErrorMessage(null);
 
     try {
-      console.log('Attempting login with:', data.email);
 
-      // Use fetch directly instead of RTK Query
-      const response = await fetch(`${appConfiguration.baseUrl}/authentication/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password
-        }),
-      });
+      const response = await login({
+        email: data.email,
+        password: data.password
+      }).unwrap();
 
-      const result = await response.json();
-      console.log('Login response:', result);
-
-      if (result.success && result.data?.tokens?.accessToken) {
-        const { accessToken, refreshToken } = result.data.tokens;
+      if (response.success && response.data?.tokens?.accessToken) {
+        const { accessToken, refreshToken } = response.data.tokens;
 
         // Set tokens in cookies using shareWithCookies
         const tokenName = `${appConfiguration.appCode}token`;
@@ -136,27 +108,30 @@ export default function LoginForm({
           refreshTokenSet: !!verifyRefreshToken
         });
 
-        toast.success('Successfully logged in!');
-        reset();
-
-        onSuccess?.();
 
         // Redirect based on user role
-        const userRole = result.data.role?.toLowerCase();
+        const userRole = response.data.role?.toLowerCase();
+
+        console.log(response.data.role)
 
         if (userRole === 'admin' || userRole === 'super_admin') {
-          router.push('/admin/dashboard');
-        } else if (userRole === 'client') {
-          router.push('/client/dashboard');
+          router.push(`/redirect?to=/admin/dashboard`);
         } else {
-          router.push('/dashboard');
+          router.push(`/redirect?to=/admin/dashboard`);
         }
+
+        toast.success('Successfully logged in!');
+
       } else {
-        throw new Error(result.message || 'Login failed');
+        throw new Error(response.message || 'Login failed');
       }
     } catch (error: any) {
       console.error('Login error:', error);
-      toast.error(error.message || 'Login failed');
+
+      // Extract error message from RTK Query error
+      const errorMessage = error?.data?.message || error?.message || 'Login failed';
+      setErrorMessage(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -308,7 +283,7 @@ export default function LoginForm({
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail className={cn(
-                      "h-5 w-5 transition-colors",
+                      `${errors.email?.message ? 'mb-5' : ''} w-5 transition-colors`,
                       "text-gray-400 group-focus-within:text-blue-500",
                       "dark:text-gray-500 dark:group-focus-within:text-blue-400"
                     )} />
@@ -365,7 +340,7 @@ export default function LoginForm({
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className={cn(
-                      "h-5 w-5 transition-colors",
+                      `${errors.password?.message ? 'mb-5' : ''} w-5 transition-colors`,
                       "text-gray-400 group-focus-within:text-blue-500",
                       "dark:text-gray-500 dark:group-focus-within:text-blue-400"
                     )} />
@@ -388,13 +363,13 @@ export default function LoginForm({
                   >
                     {showPassword ? (
                       <EyeOff className={cn(
-                        "h-5 w-5 transition-colors",
+                        `${errors.password?.message ? 'mb-5' : ''} w-5 transition-colors`,
                         "text-gray-500 hover:text-gray-700",
                         "dark:text-gray-500 dark:hover:text-gray-700"
                       )} />
                     ) : (
                       <Eye className={cn(
-                        "h-5 w-5 transition-colors",
+                        `${errors.password?.message ? 'mb-5' : ''} w-5 transition-colors`,
                         "text-gray-500 hover:text-gray-700",
                         "dark:text-gray-500 dark:hover:text-gray-300"
                       )} />
@@ -448,7 +423,7 @@ export default function LoginForm({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={cn(
-                    "relative px-6 py-3 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group",
+                    "relative px-6 hover:cursor-pointer py-3 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group",
                     "bg-linear-to-r from-blue-600 to-purple-600",
                     "dark:from-blue-700 dark:to-purple-700"
                   )}

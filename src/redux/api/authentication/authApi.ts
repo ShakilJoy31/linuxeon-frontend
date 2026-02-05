@@ -1,28 +1,26 @@
 import { apiSlice } from "../apiSlice";
 
+
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-
-    // Login user
     login: builder.mutation({
-      query: (credentials) => ({
+      query: (credentials: { email: string; password: string }) => ({
         url: "/authentication/login",
         method: "POST",
         body: credentials,
       }),
+      invalidatesTags: ["Client"],
     }),
 
-    // Register new client
     registerClient: builder.mutation({
-      query: (clientData) => ({
+      query: (clientData: any) => ({
         url: "/authentication/register-new-client",
         method: "POST",
         body: clientData,
       }),
-      invalidatesTags: ["clients"],
+      invalidatesTags: ["Client"],
     }),
 
-    // Get all clients with pagination and filtering
     getAllClients: builder.query({
       query: ({ 
         page = 1, 
@@ -30,6 +28,12 @@ export const authApi = apiSlice.injectEndpoints({
         search = "", 
         status = "", 
         role = "client" 
+      }: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: string;
+        role?: string;
       }) => {
         const params = new URLSearchParams();
         params.append("page", page.toString());
@@ -43,66 +47,31 @@ export const authApi = apiSlice.injectEndpoints({
           method: "GET",
         };
       },
-      providesTags: ["clients"],
+      providesTags: (result) => {
+        return result?.data 
+          ? [
+              ...result.data.map(({ id }: { id: string }) => ({ type: 'Client' as const, id })),
+              { type: 'Client', id: 'LIST' },
+            ]
+          : [{ type: 'Client', id: 'LIST' }];
+      },
     }),
 
-    // Get client by ID
     getClientById: builder.query({
-      query: (id) => ({
+      query: (id: string) => ({
         url: `/authentication/get-client-according-to-id/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "clients", id }],
+      providesTags: (result, error, id) => [{ type: 'Client', id }],
     }),
 
-    // Update client
-    updateClient: builder.mutation({
-      query: ({ id, ...data }) => ({
-        url: `/authentication/update-client/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "clients", id },
-        "clients"
-      ],
-    }),
-
-    // Delete client
-    deleteClient: builder.mutation({
-      query: (id) => ({
-        url: `/authentication/delete-client/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["clients"],
-    }),
-
-    // Update client status
-    updateClientStatus: builder.mutation({
-      query: ({ id, status }) => ({
-        url: `/authentication/update-client-status/${id}`,
-        method: "PUT",
-        body: { status },
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "clients", id },
-        "clients"
-      ],
-    }),
-
-    //! Refresh access token. Will be used in the future for token refresh mechanism
     refreshToken: builder.mutation({
-      query: (refreshToken) => ({
+      query: (refreshToken: string) => ({
         url: "/authentication/refresh",
         method: "POST",
         body: { refreshToken },
       }),
     }),
-
-
-
-
-
   }),
 });
 
@@ -111,8 +80,5 @@ export const {
   useRegisterClientMutation,
   useGetAllClientsQuery,
   useGetClientByIdQuery,
-  useUpdateClientMutation,
-  useDeleteClientMutation,
-  useUpdateClientStatusMutation,
   useRefreshTokenMutation,
 } = authApi;

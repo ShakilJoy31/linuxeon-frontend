@@ -4,20 +4,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const BASE_URL = appConfiguration.baseUrl;
 
-// Create a more specific base query for debugging
-const customBaseQuery = fetchBaseQuery({
+const baseQuery = fetchBaseQuery({
   baseUrl: BASE_URL,
-  prepareHeaders(headers) {
+  prepareHeaders: (headers) => {
     const token = shareWithCookies("get", `${appConfiguration.appCode}token`, 0) as string | null;
     
-    console.log('Base URL:', BASE_URL);
-    console.log('Token from cookies:', token);
-    
-    // Only set authorization header if token exists
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
-    } else {
-      console.log('No token found in cookies');
     }
     
     return headers;
@@ -25,8 +18,8 @@ const customBaseQuery = fetchBaseQuery({
 });
 
 export const apiSlice = createApi({
-  reducerPath: "apiSlice",
-  baseQuery: customBaseQuery,
+  reducerPath: "api",
+  baseQuery,
+  tagTypes: ["Client", "File"],
   endpoints: () => ({}),
-  tagTypes: ["clients", "file"],
 });
