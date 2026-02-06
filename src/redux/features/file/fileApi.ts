@@ -16,7 +16,6 @@ const fileApi = apiSlice.injectEndpoints({
       query: (data) => ({
         url: `/file/get-images-all?search=${data.search || ""}`,
       }),
-      providesTags: ["file"],
     }),
     // DELETE FILE (for removing a file)
     deleteFile: builder.mutation({

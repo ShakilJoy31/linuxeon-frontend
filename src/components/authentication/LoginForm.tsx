@@ -10,7 +10,6 @@ import { toast } from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
 import { appConfiguration } from '@/utils/constant/appConfiguration'; // Import your configuration
 import { shareWithCookies } from '@/utils/helper/shareWithCookies';
 import { useLoginMutation } from '@/redux/api/authentication/authApi';
@@ -31,12 +30,11 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({
-  onSuccess,
   onSwitchToSignup,
   onForgotPassword
 }: LoginFormProps) {
   const router = useRouter();
-  const [login, { isLoading: loginLoading, data: loginData }] = useLoginMutation();
+  const [login, { isLoading: loginLoading }] = useLoginMutation();
   const [showPassword, setShowPassword] = useState(false);
   const [animateBg, setAnimateBg] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -52,8 +50,6 @@ export default function LoginForm({
     register,
     handleSubmit,
     formState: { errors },
-    reset,
-    setValue,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -125,7 +121,7 @@ export default function LoginForm({
       } else {
         throw new Error(response.message || 'Login failed');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login error:', error);
 
       // Extract error message from RTK Query error

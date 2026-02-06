@@ -1,5 +1,5 @@
 
-import AdminDashboard from "@/components/client-components/AdminDashboard";
+
 import { generateDynamicMetadata } from "@/metadata/generateMetadata";
 
 export async function generateMetadata() {

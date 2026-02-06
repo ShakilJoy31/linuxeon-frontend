@@ -23,8 +23,6 @@ import {
   Database,
   Globe,
   History,
-  Moon,
-  Sun,
 } from "lucide-react";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { MdLogout } from "react-icons/md";
@@ -295,9 +293,9 @@ const AdminSidebar = () => {
   }, [pathname]);
 
   // Helper function to check if any subitem is active
-  const isActiveSubmenu = (item: any): boolean => {
+  const isActiveSubmenu = (item): boolean => {
     if (!item.subItems) return false;
-    return item.subItems.some((subItem: any) => isActive(subItem.href));
+    return item.subItems.some((subItem: {href: string }) => isActive(subItem.href));
   };
 
   // Theme toggle handler

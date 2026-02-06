@@ -2,29 +2,22 @@
 
 import { useState, useEffect } from "react";
 import {
-    BarChart3,
     Users,
     Send,
     DollarSign,
-    TrendingUp,
-    TrendingDown,
     Clock,
     CheckCircle,
     XCircle,
-    MessageSquare,
     Globe,
     ArrowUpRight,
     ArrowDownRight,
     Calendar,
-    CreditCard,
     Activity,
     Shield,
     Bell,
     Database,
     Download,
     MoreVertical,
-    PieChart,
-    LineChart,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -35,8 +28,6 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    LineChart as RechartLineChart,
-    Line,
     PieChart as RechartPieChart,
     Pie,
     Cell,
@@ -49,7 +40,7 @@ const AdminDashboard = () => {
     const [timeRange, setTimeRange] = useState("monthly");
     const [isLoading, setIsLoading] = useState(true);
     const { theme, systemTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
+    const [, setMounted] = useState(false);
 
     // Handle theme mounting
     useEffect(() => {
@@ -229,30 +220,6 @@ const AdminDashboard = () => {
             opacity: 1,
             transition: {
                 staggerChildren: 0.1,
-            },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { y: 20, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: {
-                duration: 0.5,
-                ease: "easeOut",
-            },
-        },
-    };
-
-    const cardVariants = {
-        hidden: { scale: 0.95, opacity: 0 },
-        visible: {
-            scale: 1,
-            opacity: 1,
-            transition: {
-                duration: 0.4,
-                ease: "easeOut",
             },
         },
     };

@@ -1,15 +1,38 @@
 // src/app/redirect/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function RedirectPage() {
+// Create a separate component for the content that uses searchParams
+function RedirectContent() {
   const searchParams = useSearchParams();
   const to = searchParams.get('to') || '/admin/dashboard';
   const [progress, setProgress] = useState(0);
   const [dots, setDots] = useState('');
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+  // Get window dimensions safely
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
 
   useEffect(() => {
     console.log('RedirectPage: Switching layout to', to);
@@ -28,7 +51,9 @@ export default function RedirectPage() {
           
           // Final redirect with a smooth transition
           setTimeout(() => {
-            window.location.href = to;
+            if (typeof window !== 'undefined') {
+              window.location.href = to;
+            }
           }, 300);
           return 100;
         }
@@ -42,23 +67,28 @@ export default function RedirectPage() {
     };
   }, [to]);
 
+  // Safe function to get random position
+  const getRandomPosition = (max: number) => {
+    return windowSize.width > 0 ? Math.random() * max : 0;
+  };
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 overflow-hidden">
-      {/* Animated Background Particles */}
+      {/* Animated Background Particles - Fixed window reference */}
       <div className="absolute inset-0">
         {Array.from({ length: 50 }).map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-blue-400 rounded-full"
             initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: getRandomPosition(windowSize.width),
+              y: getRandomPosition(windowSize.height),
               opacity: 0,
               scale: 0,
             }}
             animate={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: getRandomPosition(windowSize.width),
+              y: getRandomPosition(windowSize.height),
               opacity: [0, 0.7, 0],
               scale: [0, 1, 0],
             }}
@@ -288,7 +318,7 @@ export default function RedirectPage() {
         ))}
       </div>
 
-      {/* Particle Explosion on Complete */}
+      {/* Particle Explosion on Complete - Fixed window reference */}
       <AnimatePresence>
         {progress === 100 && (
           <>
@@ -297,14 +327,14 @@ export default function RedirectPage() {
                 key={`explosion-${i}`}
                 className="absolute w-2 h-2 bg-yellow-400 rounded-full"
                 initial={{
-                  x: window.innerWidth / 2,
-                  y: window.innerHeight / 2,
+                  x: windowSize.width > 0 ? windowSize.width / 2 : 0,
+                  y: windowSize.height > 0 ? windowSize.height / 2 : 0,
                   scale: 0,
                   opacity: 1,
                 }}
                 animate={{
-                  x: window.innerWidth / 2 + (Math.random() - 0.5) * 300,
-                  y: window.innerHeight / 2 + (Math.random() - 0.5) * 300,
+                  x: windowSize.width > 0 ? windowSize.width / 2 + (Math.random() - 0.5) * 300 : 0,
+                  y: windowSize.height > 0 ? windowSize.height / 2 + (Math.random() - 0.5) * 300 : 0,
                   scale: [0, 1, 0],
                   opacity: [1, 0.8, 0],
                 }}
@@ -319,5 +349,18 @@ export default function RedirectPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+// Main export with Suspense boundary
+export default function RedirectPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
+        <div className="text-xl text-gray-300">Initializing redirect...</div>
+      </div>
+    }>
+      <RedirectContent />
+    </Suspense>
   );
 }

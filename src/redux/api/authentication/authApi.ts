@@ -13,7 +13,7 @@ export const authApi = apiSlice.injectEndpoints({
     }),
 
     registerClient: builder.mutation({
-      query: (clientData: any) => ({
+      query: (clientData: {email: string, password: string}) => ({
         url: "/authentication/register-new-client",
         method: "POST",
         body: clientData,
