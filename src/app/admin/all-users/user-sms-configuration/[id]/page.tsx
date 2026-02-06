@@ -1,12 +1,12 @@
 
 
-import ClientsContent from "@/components/client-components/User/AllUser";
+
 import { generateDynamicMetadata } from "@/metadata/generateMetadata";
 import { Suspense } from "react";
 
 export async function generateMetadata() {
   return generateDynamicMetadata({
-    title: "Users | Linuxeon",
+    title: "Configuration | Linuxeon",
     description: "Linuxeon is a cutting-edge SMS and bulk messaging platform that enables businesses to send transactional, promotional, and OTP messages globally. Reliable, scalable, and feature-rich messaging solutions.",
     keywords: [
       "linuxeon", "sms service", "bulk sms", "sms marketing",
@@ -28,7 +28,7 @@ const Home = () => {
                 </div>
             </div>
         }>
-            <ClientsContent />
+           Sms configuration
         </Suspense>
     );
 }

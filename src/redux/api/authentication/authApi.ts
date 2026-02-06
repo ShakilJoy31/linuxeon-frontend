@@ -13,21 +13,20 @@ export const authApi = apiSlice.injectEndpoints({
     }),
 
     registerClient: builder.mutation({
-      query: (clientData: {email: string, password: string}) => ({
+      query: (clientData: { email: string, password: string }) => ({
         url: "/authentication/register-new-client",
         method: "POST",
         body: clientData,
       }),
-      invalidatesTags: ["Client"],
     }),
 
     getAllClients: builder.query({
-      query: ({ 
-        page = 1, 
-        limit = 10, 
-        search = "", 
-        status = "", 
-        role = "client" 
+      query: ({
+        page = 1,
+        limit = 10,
+        search = "",
+        status = "",
+        role = "client"
       }: {
         page?: number;
         limit?: number;
@@ -48,11 +47,11 @@ export const authApi = apiSlice.injectEndpoints({
         };
       },
       providesTags: (result) => {
-        return result?.data 
+        return result?.data
           ? [
-              ...result.data.map(({ id }: { id: string }) => ({ type: 'Client' as const, id })),
-              { type: 'Client', id: 'LIST' },
-            ]
+            ...result.data.map(({ id }: { id: string }) => ({ type: 'Client' as const, id })),
+            { type: 'Client', id: 'LIST' },
+          ]
           : [{ type: 'Client', id: 'LIST' }];
       },
     }),
@@ -62,7 +61,24 @@ export const authApi = apiSlice.injectEndpoints({
         url: `/authentication/get-client-according-to-id/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: 'Client', id }],
+    }),
+
+
+
+    // Add these to your existing authApi endpoints
+    deleteClient: builder.mutation({
+      query: (id: number) => ({
+        url: `/authentication/delete-client/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+
+    updateClientStatus: builder.mutation({
+      query: ({ id, status }: { id: number; status: 'active' | 'pending' | 'inactive' }) => ({
+        url: `/authentication/update-client-status/${id}`,
+        method: 'PUT',
+        body: { status },
+      }),
     }),
 
     refreshToken: builder.mutation({
@@ -72,6 +88,7 @@ export const authApi = apiSlice.injectEndpoints({
         body: { refreshToken },
       }),
     }),
+
   }),
 });
 
@@ -81,4 +98,6 @@ export const {
   useGetAllClientsQuery,
   useGetClientByIdQuery,
   useRefreshTokenMutation,
+  useDeleteClientMutation,
+  useUpdateClientStatusMutation,
 } = authApi;

@@ -506,7 +506,7 @@ const AdminSidebar = () => {
                   Admin User
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  admin@sms-platform.com
+                  shakil@gmail.com
                 </p>
               </motion.div>
             )}
@@ -587,19 +587,6 @@ const AdminSidebar = () => {
                     <RiLockPasswordFill size={16} className="text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <span className="text-sm font-medium">Change Password</span>
-                </div>
-                <ExternalLink size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400" />
-              </Link>
-
-              <Link
-                href="/admin/system-status"
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/50 transition-colors">
-                    <BarChart3 size={16} className="text-amber-600 dark:text-amber-400" />
-                  </div>
-                  <span className="text-sm font-medium">System Status</span>
                 </div>
                 <ExternalLink size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400" />
               </Link>
