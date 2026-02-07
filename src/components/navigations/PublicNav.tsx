@@ -118,7 +118,7 @@ export default function PublicNav() {
             alt="Logo"
             width={180}
             height={70}
-            className="w-36 h-auto "
+            className="w-36 h-auto dark:invert dark:brightness-200"
           />
         </div>
 

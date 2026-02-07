@@ -1,6 +1,5 @@
 
-
-
+import UserSMSConfigurationPage from "@/components/client-components/SMSconfigurations/SMSconfigList";
 import { generateDynamicMetadata } from "@/metadata/generateMetadata";
 import { Suspense } from "react";
 
@@ -28,7 +27,7 @@ const Home = () => {
                 </div>
             </div>
         }>
-           Sms configuration
+           <UserSMSConfigurationPage></UserSMSConfigurationPage>
         </Suspense>
     );
 }

@@ -252,17 +252,17 @@ const AdminSidebar = () => {
   // Improved isActive function
   const isActive = (href: string) => {
     if (!pathname || !href) return false;
-    
+
     // For dashboard, exact match
     if (href === "/admin/dashboard") {
       return pathname === href;
     }
-    
+
     // For other routes, check if current path starts with href
     // Also handle trailing slashes
     const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
     const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
-    
+
     return normalizedPathname === normalizedHref || normalizedPathname.startsWith(normalizedHref + '/');
   };
 
@@ -287,7 +287,7 @@ const AdminSidebar = () => {
         }
       }
     }
-    
+
     // If no subitem matches, close all submenus
     setActiveSubmenu(null);
   }, [pathname]);
@@ -295,7 +295,7 @@ const AdminSidebar = () => {
   // Helper function to check if any subitem is active
   const isActiveSubmenu = (item): boolean => {
     if (!item.subItems) return false;
-    return item.subItems.some((subItem: {href: string }) => isActive(subItem.href));
+    return item.subItems.some((subItem: { href: string }) => isActive(subItem.href));
   };
 
   // Theme toggle handler
@@ -317,9 +317,8 @@ const AdminSidebar = () => {
         initial={{ width: 70 }}
         animate={{ width: isOpen ? 260 : 70 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`fixed top-0 left-0 z-40 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col ${
-          isOpen ? "w-[260px]" : "w-[70px]"
-        }`}
+        className={`fixed top-0 left-0 z-40 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col ${isOpen ? "w-[260px]" : "w-[70px]"
+          }`}
       >
         {/* Logo and Toggle */}
         <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
@@ -347,9 +346,8 @@ const AdminSidebar = () => {
             aria-label="Toggle menu"
           >
             <ChevronsRight
-              className={`transition-transform duration-300 text-gray-700 dark:text-gray-300 ${
-                isOpen ? "rotate-180" : ""
-              }`}
+              className={`transition-transform duration-300 text-gray-700 dark:text-gray-300 ${isOpen ? "rotate-180" : ""
+                }`}
               size={22}
             />
           </button>
@@ -367,7 +365,7 @@ const AdminSidebar = () => {
                       "flex items-center px-3 py-3 gap-3 rounded-lg transition-all group",
                       "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
                       isActive(item.href) &&
-                        "bg-blue-600 text-white dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600"
+                      "bg-blue-600 text-white dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600"
                     )}
                   >
                     <span
@@ -396,7 +394,7 @@ const AdminSidebar = () => {
                         "flex items-center px-3 py-3 gap-3 w-full rounded-lg transition-all group",
                         "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
                         (activeSubmenu === item.key || isActiveSubmenu(item)) &&
-                          "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       )}
                     >
                       <span
@@ -449,7 +447,7 @@ const AdminSidebar = () => {
                                     "flex items-center px-3 py-2.5 gap-2 text-sm rounded-lg transition-all group",
                                     "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
                                     isActive(subItem.href) &&
-                                      "bg-blue-600 text-white dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600"
+                                    "bg-blue-600 text-white dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600"
                                   )}
                                 >
                                   <span
@@ -552,18 +550,25 @@ const AdminSidebar = () => {
               className="space-y-3"
             >
               {/* Theme Toggle */}
-              <button
+              <div
                 onClick={toggleTheme}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group cursor-pointer"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    toggleTheme();
+                    e.preventDefault();
+                  }
+                }}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Toggle Theme
                   </span>
                 </div>
-                <ThemeSwitcher></ThemeSwitcher>
-               
-              </button>
+                <ThemeSwitcher />
+              </div>
 
               <Link
                 href="/admin/profile"
