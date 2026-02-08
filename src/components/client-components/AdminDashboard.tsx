@@ -722,11 +722,6 @@ const AdminDashboard = () => {
                     </div>
                 </div>
             </motion.div>
-
-            {/* Theme toggle indicator (for debugging) */}
-            <div className="fixed bottom-4 right-4 text-xs text-gray-500 dark:text-gray-400">
-                Theme: {currentTheme}
-            </div>
         </motion.div>
     );
 };

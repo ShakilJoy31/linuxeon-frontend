@@ -15,6 +15,7 @@ import {
 import { useGetClientByIdQuery } from '@/redux/api/authentication/authApi';
 import { useTheme } from '@/hooks/useThemeContext';
 import UserSMSConfiguration from './UserSMSConfiguration';
+import BackButton from '@/components/reusable-components/BackButton';
 
 const UserSMSConfigurationPage = () => {
   const params = useParams();
@@ -68,17 +69,8 @@ const UserSMSConfigurationPage = () => {
         className="mb-8"
       >
         <div className="flex items-center gap-4 mb-6">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => router.back()}
-            className={`p-2 rounded-lg transition-all duration-200 ${theme === 'dark' 
-              ? 'bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700' 
-              : 'bg-white hover:bg-gray-100 text-gray-600 border border-gray-200'
-            } shadow-sm`}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </motion.button>
+          
+          <BackButton />
           
           <div>
             <h1 className={`text-2xl md:text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>

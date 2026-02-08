@@ -23,6 +23,7 @@ import {
   Database,
   Globe,
   History,
+  Lock,
 } from "lucide-react";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { MdLogout } from "react-icons/md";
@@ -51,6 +52,8 @@ import { appConfiguration } from "@/utils/constant/appConfiguration";
 import { CgTemplate } from "react-icons/cg";
 import { useTheme } from "next-themes";
 import ThemeSwitcher from "../common/ThemeSwitcher";
+import { getUserInfo } from "@/utils/helper/userFromToken";
+import { useGetClientByIdQuery } from "@/redux/api/authentication/authApi";
 
 const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -60,6 +63,25 @@ const AdminSidebar = () => {
   const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userInfo = await getUserInfo();
+      console.log("Fetched user info:", userInfo);
+      if (!userInfo) {
+        router.push("/");
+      } else {
+        setUser(userInfo);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const { data: userData } = useGetClientByIdQuery(user ? user.id : "",);
+
+  console.log(userData);
+
   // Handle theme mounting
   useEffect(() => {
     setMounted(true);
@@ -67,187 +89,376 @@ const AdminSidebar = () => {
 
   const currentTheme = theme === "system" ? systemTheme : theme;
 
-  const menuItems = [
-    {
-      key: "dashboard",
-      icon: <Home size={20} />,
-      label: "Dashboard",
-      href: "/admin/dashboard",
-    },
-    {
-      key: "sms",
-      icon: <Send size={20} />,
-      label: "SMS Management",
-      subItems: [
-        {
-          key: "compose-sms",
-          icon: <MessageSquare size={16} />,
-          label: "Compose SMS",
-          href: "/admin/sms/compose",
-        },
-        {
-          key: "bulk-sms",
-          icon: <Send size={16} />,
-          label: "Bulk SMS",
-          href: "/admin/sms/bulk",
-        },
-        {
-          key: "scheduled-sms",
-          icon: <Calendar size={16} />,
-          label: "Scheduled SMS",
-          href: "/admin/sms/scheduled",
-        },
-        {
-          key: "sms-history",
-          icon: <History size={16} />,
-          label: "SMS History",
-          href: "/admin/sms/history",
-        },
-        {
-          key: "sms-templates",
-          icon: <CgTemplate size={16} />,
-          label: "Templates",
-          href: "/admin/sms/templates",
-        },
-        {
-          key: "sms-inbox",
-          icon: <Inbox size={16} />,
-          label: "Inbox",
-          href: "/admin/sms/inbox",
-        },
-      ],
-    },
-    {
-      key: "users",
-      icon: <Users size={20} />,
-      label: "User Management",
-      subItems: [
-        {
-          key: "all-users",
-          icon: <Users size={16} />,
-          label: "All Users",
-          href: "/admin/all-users",
-        },
-        {
-          key: "user-groups",
-          icon: <UserCheck size={16} />,
-          label: "User Groups",
-          href: "/admin/users/groups",
-        },
-        {
-          key: "user-balance",
-          icon: <CreditCard size={16} />,
-          label: "Balance & Credits",
-          href: "/admin/users/balance",
-        },
-        {
-          key: "user-activity",
-          icon: <BarChart3 size={16} />,
-          label: "User Activity",
-          href: "/admin/users/activity",
-        },
-      ],
-    },
-    {
-      key: "reports",
-      icon: <BarChart3 size={20} />,
-      label: "Reports & Analytics",
-      subItems: [
-        {
-          key: "sms-reports",
-          icon: <FileText size={16} />,
-          label: "SMS Reports",
-          href: "/admin/reports/sms",
-        },
-        {
-          key: "financial-reports",
-          icon: <CreditCard size={16} />,
-          label: "Financial Reports",
-          href: "/admin/reports/financial",
-        },
-        {
-          key: "delivery-reports",
-          icon: <BarChart3 size={16} />,
-          label: "Delivery Reports",
-          href: "/admin/reports/delivery",
-        },
-        {
-          key: "usage-analytics",
-          icon: <Database size={16} />,
-          label: "Usage Analytics",
-          href: "/admin/reports/analytics",
-        },
-      ],
-    },
-    {
-      key: "settings",
-      icon: <Settings size={20} />,
-      label: "System Settings",
-      subItems: [
-        {
-          key: "sms-gateway",
-          icon: <Globe size={16} />,
-          label: "SMS Gateway",
-          href: "/admin/settings/gateway",
-        },
-        {
-          key: "api-settings",
-          icon: <Settings size={16} />,
-          label: "API Settings",
-          href: "/admin/settings/api",
-        },
-        {
-          key: "sms-rates",
-          icon: <CreditCard size={16} />,
-          label: "SMS Rates",
-          href: "/admin/settings/rates",
-        },
-        {
-          key: "notification-settings",
-          icon: <Bell size={16} />,
-          label: "Notifications",
-          href: "/admin/settings/notifications",
-        },
-      ],
-    },
-    {
-      key: "security",
-      icon: <Shield size={20} />,
-      label: "Security",
-      href: "/admin/security",
-    },
-    {
-      key: "notifications",
-      icon: <Bell size={20} />,
-      label: "Notifications",
-      href: "/admin/notifications",
-    },
-    {
-      key: "support",
-      icon: <HelpCircle size={20} />,
-      label: "Support",
-      subItems: [
-        {
-          key: "help-center",
-          icon: <HelpCircle size={16} />,
-          label: "Help Center",
-          href: "/admin/support/help",
-        },
-        {
-          key: "tickets",
-          icon: <Inbox size={16} />,
-          label: "Support Tickets",
-          href: "/admin/support/tickets",
-        },
-        {
-          key: "documentation",
-          icon: <FileText size={16} />,
-          label: "Documentation",
-          href: "/admin/support/docs",
-        },
-      ],
-    },
-  ];
+  console.log(userData?.data?.role)
+
+
+  const getMenuByRole = () => {
+    const ClientmenuItems = [
+      {
+        key: "dashboard",
+        icon: <Home size={20} />,
+        label: "Dashboard",
+        href: "/admin/dashboard",
+      },
+      {
+        key: "sms",
+        icon: <Send size={20} />,
+        label: "SMS Management",
+        subItems: [
+          {
+            key: "audience",
+            icon: <MessageSquare size={16} />,
+            label: "Audience",
+            href: "/admin/sms/audience",
+          },
+          {
+            key: "bulk-sms",
+            icon: <Send size={16} />,
+            label: "Bulk SMS",
+            href: "/admin/sms/bulk-sms",
+          },
+          {
+            key: "scheduled-sms",
+            icon: <Calendar size={16} />,
+            label: "Scheduled SMS",
+            href: "/admin/sms/scheduled",
+          },
+          {
+            key: "sms-history",
+            icon: <History size={16} />,
+            label: "SMS History",
+            href: "/admin/sms/history",
+          },
+          {
+            key: "sms-templates",
+            icon: <CgTemplate size={16} />,
+            label: "Templates",
+            href: "/admin/sms/templates",
+          },
+          {
+            key: "sms-inbox",
+            icon: <Inbox size={16} />,
+            label: "Inbox",
+            href: "/admin/sms/inbox",
+          },
+        ],
+      },
+      {
+        key: "users",
+        icon: <Users size={20} />,
+        label: "User Management",
+        subItems: [
+          {
+            key: "user-groups",
+            icon: <UserCheck size={16} />,
+            label: "User Groups",
+            href: "/admin/users/groups",
+          },
+          {
+            key: "user-balance",
+            icon: <CreditCard size={16} />,
+            label: "Balance & Credits",
+            href: "/admin/users/balance",
+          },
+          {
+            key: "user-activity",
+            icon: <BarChart3 size={16} />,
+            label: "User Activity",
+            href: "/admin/users/activity",
+          },
+        ],
+      },
+      {
+        key: "reports",
+        icon: <BarChart3 size={20} />,
+        label: "Reports & Analytics",
+        subItems: [
+          {
+            key: "sms-reports",
+            icon: <FileText size={16} />,
+            label: "SMS Reports",
+            href: "/admin/reports/sms",
+          },
+          {
+            key: "financial-reports",
+            icon: <CreditCard size={16} />,
+            label: "Financial Reports",
+            href: "/admin/reports/financial",
+          },
+          {
+            key: "delivery-reports",
+            icon: <BarChart3 size={16} />,
+            label: "Delivery Reports",
+            href: "/admin/reports/delivery",
+          },
+          {
+            key: "usage-analytics",
+            icon: <Database size={16} />,
+            label: "Usage Analytics",
+            href: "/admin/reports/analytics",
+          },
+        ],
+      },
+      {
+        key: "settings",
+        icon: <Settings size={20} />,
+        label: "System Settings",
+        subItems: [
+          {
+            key: "sms-gateway",
+            icon: <Globe size={16} />,
+            label: "SMS Gateway",
+            href: "/admin/settings/gateway",
+          },
+          {
+            key: "api-settings",
+            icon: <Settings size={16} />,
+            label: "API Settings",
+            href: "/admin/settings/api",
+          },
+          {
+            key: "sms-rates",
+            icon: <CreditCard size={16} />,
+            label: "SMS Rates",
+            href: "/admin/settings/rates",
+          },
+          {
+            key: "notification-settings",
+            icon: <Bell size={16} />,
+            label: "Notifications",
+            href: "/admin/settings/notifications",
+          },
+        ],
+      },
+      {
+        key: "security",
+        icon: <Shield size={20} />,
+        label: "Security",
+        href: "/admin/security",
+      },
+      {
+        key: "notifications",
+        icon: <Bell size={20} />,
+        label: "Notifications",
+        href: "/admin/notifications",
+      },
+      {
+        key: "support",
+        icon: <HelpCircle size={20} />,
+        label: "Support",
+        subItems: [
+          {
+            key: "help-center",
+            icon: <HelpCircle size={16} />,
+            label: "Help Center",
+            href: "/admin/support/help",
+          },
+          {
+            key: "tickets",
+            icon: <Inbox size={16} />,
+            label: "Support Tickets",
+            href: "/admin/support/tickets",
+          },
+          {
+            key: "documentation",
+            icon: <FileText size={16} />,
+            label: "Documentation",
+            href: "/admin/support/docs",
+          },
+        ],
+      },
+    ];
+
+    const adminMenuItems = [
+      {
+        key: "dashboard",
+        icon: <Home size={20} />,
+        label: "Dashboard",
+        href: "/admin/dashboard",
+      },
+      {
+        key: "sms",
+        icon: <Send size={20} />,
+        label: "SMS Management",
+        subItems: [
+          {
+            key: "compose-sms",
+            icon: <MessageSquare size={16} />,
+            label: "Compose SMS",
+            href: "/admin/sms/compose",
+          },
+          {
+            key: "bulk-sms",
+            icon: <Send size={16} />,
+            label: "Bulk SMS",
+            href: "/admin/sms/bulk",
+          },
+          {
+            key: "scheduled-sms",
+            icon: <Calendar size={16} />,
+            label: "Scheduled SMS",
+            href: "/admin/sms/scheduled",
+          },
+          {
+            key: "sms-history",
+            icon: <History size={16} />,
+            label: "SMS History",
+            href: "/admin/sms/history",
+          },
+          {
+            key: "sms-templates",
+            icon: <CgTemplate size={16} />,
+            label: "Templates",
+            href: "/admin/sms/templates",
+          },
+          {
+            key: "sms-inbox",
+            icon: <Inbox size={16} />,
+            label: "Inbox",
+            href: "/admin/sms/inbox",
+          },
+        ],
+      },
+      {
+        key: "users",
+        icon: <Users size={20} />,
+        label: "User Management",
+        subItems: [
+          {
+            key: "all-users",
+            icon: <Users size={16} />,
+            label: "All Users",
+            href: "/admin/all-users",
+          },
+          {
+            key: "user-groups",
+            icon: <UserCheck size={16} />,
+            label: "User Groups",
+            href: "/admin/users/groups",
+          },
+          {
+            key: "user-balance",
+            icon: <CreditCard size={16} />,
+            label: "Balance & Credits",
+            href: "/admin/users/balance",
+          },
+          {
+            key: "user-activity",
+            icon: <BarChart3 size={16} />,
+            label: "User Activity",
+            href: "/admin/users/activity",
+          },
+        ],
+      },
+      {
+        key: "reports",
+        icon: <BarChart3 size={20} />,
+        label: "Reports & Analytics",
+        subItems: [
+          {
+            key: "sms-reports",
+            icon: <FileText size={16} />,
+            label: "SMS Reports",
+            href: "/admin/reports/sms",
+          },
+          {
+            key: "financial-reports",
+            icon: <CreditCard size={16} />,
+            label: "Financial Reports",
+            href: "/admin/reports/financial",
+          },
+          {
+            key: "delivery-reports",
+            icon: <BarChart3 size={16} />,
+            label: "Delivery Reports",
+            href: "/admin/reports/delivery",
+          },
+          {
+            key: "usage-analytics",
+            icon: <Database size={16} />,
+            label: "Usage Analytics",
+            href: "/admin/reports/analytics",
+          },
+        ],
+      },
+      {
+        key: "settings",
+        icon: <Settings size={20} />,
+        label: "System Settings",
+        subItems: [
+          {
+            key: "sms-gateway",
+            icon: <Globe size={16} />,
+            label: "SMS Gateway",
+            href: "/admin/settings/gateway",
+          },
+          {
+            key: "api-settings",
+            icon: <Settings size={16} />,
+            label: "API Settings",
+            href: "/admin/settings/api",
+          },
+          {
+            key: "sms-rates",
+            icon: <CreditCard size={16} />,
+            label: "SMS Rates",
+            href: "/admin/settings/rates",
+          },
+          {
+            key: "notification-settings",
+            icon: <Bell size={16} />,
+            label: "Notifications",
+            href: "/admin/settings/notifications",
+          },
+        ],
+      },
+      {
+        key: "security",
+        icon: <Shield size={20} />,
+        label: "Security",
+        href: "/admin/security",
+      },
+      {
+        key: "notifications",
+        icon: <Bell size={20} />,
+        label: "Notifications",
+        href: "/admin/notifications",
+      },
+      {
+        key: "support",
+        icon: <HelpCircle size={20} />,
+        label: "Support",
+        subItems: [
+          {
+            key: "help-center",
+            icon: <HelpCircle size={16} />,
+            label: "Help Center",
+            href: "/admin/support/help",
+          },
+          {
+            key: "tickets",
+            icon: <Inbox size={16} />,
+            label: "Support Tickets",
+            href: "/admin/support/tickets",
+          },
+          {
+            key: "documentation",
+            icon: <FileText size={16} />,
+            label: "Documentation",
+            href: "/admin/support/docs",
+          },
+        ],
+      },
+    ];
+
+    if (user && user?.role === 'client') {
+      return ClientmenuItems;
+    } else if (user && user?.role === 'admin') {
+      return adminMenuItems;
+    } else {
+      return [];
+    }
+  }
 
   // Improved isActive function
   const isActive = (href: string) => {
@@ -277,7 +488,7 @@ const AdminSidebar = () => {
     if (!pathname) return;
 
     // Check each menu item for subitems that match current path
-    for (const item of menuItems) {
+    for (const item of getMenuByRole()) {
       if (item.subItems) {
         for (const subItem of item.subItems) {
           if (isActive(subItem.href)) {
@@ -356,7 +567,7 @@ const AdminSidebar = () => {
         {/* Navigation Links */}
         <nav className="flex-1 overflow-y-auto py-4 px-2">
           <ul className="space-y-1">
-            {menuItems.map((item) => (
+            {getMenuByRole().map((item) => (
               <li key={item.key} className="px-1">
                 {!item.subItems ? (
                   <Link
@@ -481,7 +692,7 @@ const AdminSidebar = () => {
           <div className="flex items-center gap-3 mb-4">
             <Avatar.Root className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-700">
               <Avatar.Image
-                src={avatar.src}
+                src={userData ? userData?.data?.photo : ""}
                 alt="Admin"
                 className="object-cover w-full h-full"
               />
@@ -501,16 +712,16 @@ const AdminSidebar = () => {
                 className="text-sm flex-1"
               >
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  Admin User
+                  {userData ? userData?.data.fullName : "Loading..."}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  shakil@gmail.com
+                  {userData ? userData?.data.email : "Loading..."}
                 </p>
               </motion.div>
             )}
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <button className="p-1.5 rounded-md hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   <MdLogout
                     size={18}
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
@@ -552,7 +763,7 @@ const AdminSidebar = () => {
               {/* Theme Toggle */}
               <div
                 onClick={toggleTheme}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group cursor-pointer"
+                className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group cursor-pointer"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
@@ -585,7 +796,10 @@ const AdminSidebar = () => {
 
               <Link
                 href="/admin/change-password"
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                className={`flex items-center justify-between px-3 py-2.5 rounded-lg border text-gray-700 dark:text-gray-300 transition-colors group ${pathname === '/admin/change-password'
+                    ? 'bg-blue-600 text-white dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600'
+                    : 'border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div className="p-1.5 rounded-md bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50 transition-colors">
@@ -593,7 +807,7 @@ const AdminSidebar = () => {
                   </div>
                   <span className="text-sm font-medium">Change Password</span>
                 </div>
-                <ExternalLink size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400" />
+                <Lock size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400" />
               </Link>
             </motion.div>
           )}

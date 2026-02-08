@@ -9,38 +9,27 @@ import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "../common/ThemeSwitcher";
 import { BarChart3, Globe, Menu, MessageSquare, Users, X } from "lucide-react";
 import LanguageSwitcher from "../reusable-components/LanguageSwitcher";
-
-// const navLinks = [
-//   { name: "Theme", path: "/theme" },
-//   { name: "Projects", path: "/projects" },
-//   { name: "Affiliate", path: "/affiliate" },
-//   { name: "Services", path: "/service" },
-//   { name: "Technology", path: "/technology" },
-//   { name: "B2B", path: "/b2b" },
-//   { name: "Pricing", path: "/pricing" },
-//   { name: "About us", path: "/about-us" },
-//   { name: "FAQ", path: "/faq" },
-// ];
+import { getUserInfo } from "@/utils/helper/userFromToken";
 
 const navLinks = [
-  { 
-    name: "Pricing", 
+  {
+    name: "Pricing",
     path: "/pricing",
     icon: <BarChart3 className="w-4 h-4" />
   },
- 
-  { 
-    name: "FAQ", 
+
+  {
+    name: "FAQ",
     path: "/faq",
     icon: <Globe className="w-4 h-4" />
   },
-  { 
-    name: "Affiliate", 
+  {
+    name: "Affiliate",
     path: "/affiliate",
     icon: <Users className="w-4 h-4" />
   },
-  { 
-    name: "Contact Us", 
+  {
+    name: "Contact Us",
     path: "/contact",
     icon: <Users className="w-4 h-4" />
   },
@@ -49,7 +38,7 @@ const navLinks = [
   //   path: "/about_us",
   //   icon: <Users className="w-4 h-4" />
   // },
-  { 
+  {
     name: "Services",
     path: "/service",
     icon: <MessageSquare className="w-4 h-4" />
@@ -57,10 +46,21 @@ const navLinks = [
 ];
 
 export default function PublicNav() {
+
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userInfo = await getUserInfo();
+      if (userInfo) {
+        router.push("/redirect?to=/admin/dashboard");
+      }
+    };
+    fetchUser();
+  }, []);
 
   // Close mobile menu when route changes
   useEffect(() => {

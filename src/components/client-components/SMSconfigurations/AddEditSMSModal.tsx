@@ -398,7 +398,7 @@ const AddEditSMSModal: React.FC<AddEditSMSModalProps> = ({
                                         <span className={`text-xs ${
                                             theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
                                         }`}>
-                                            {formData.message.length}/500 characters
+                                            {formData.message.length} characters
                                         </span>
                                     </div>
                                     <div className="relative">

@@ -59,7 +59,7 @@ function RedirectContent() {
         }
         return prev + 1;
       });
-    }, 50); // Complete in ~2 seconds
+    }, 20); //! Complete in ~2 seconds
 
     return () => {
       clearInterval(progressInterval);

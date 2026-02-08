@@ -81,6 +81,20 @@ export const authApi = apiSlice.injectEndpoints({
       }),
     }),
 
+
+    changePassword: builder.mutation({
+      query: ({ id, currentPassword, newPassword, confirmNewPassword }: {
+        id: string;
+        currentPassword: string;
+        newPassword: string;
+        confirmNewPassword: string;
+      }) => ({
+        url: `/authentication/change-password/${id}`,
+        method: 'PUT',
+        body: { currentPassword, newPassword, confirmNewPassword },
+      }),
+    }),
+
     refreshToken: builder.mutation({
       query: (refreshToken: string) => ({
         url: "/authentication/refresh",
@@ -100,4 +114,5 @@ export const {
   useRefreshTokenMutation,
   useDeleteClientMutation,
   useUpdateClientStatusMutation,
+  useChangePasswordMutation
 } = authApi;
