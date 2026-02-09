@@ -3,8 +3,7 @@
 import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { 
-  ArrowLeft, 
+import {  
   User, 
   Mail, 
   Phone, 

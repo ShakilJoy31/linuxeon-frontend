@@ -1,6 +1,5 @@
 
 import PasswordChange from "@/components/client-components/ChangePassword";
-import UserSMSConfigurationPage from "@/components/client-components/SMSconfigurations/SMSconfigList";
 import { generateDynamicMetadata } from "@/metadata/generateMetadata";
 import { Suspense } from "react";
 

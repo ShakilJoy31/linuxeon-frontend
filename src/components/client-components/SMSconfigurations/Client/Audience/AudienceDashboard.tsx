@@ -6,15 +6,13 @@ import {
     Users,
     Phone,
     MessageSquare,
-    TrendingUp,
     Loader,
-    AlertCircle,
-    ArrowLeft
+    AlertCircle
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useGetClientByIdQuery } from '@/redux/api/authentication/authApi';
 import { useTheme } from '@/hooks/useThemeContext';
-import BackButton from '@/components/reusable-components/BackButton';
+// import BackButton from '@/components/reusable-components/BackButton';
 import { useGetAudienceStatsQuery } from '@/redux/api/sms-configurations/audienceApi';
 import AudienceStatsCards from './AudienceStatsCards';
 import AudienceList from './AudienceList';
@@ -22,34 +20,34 @@ import { getUserInfo } from '@/utils/helper/userFromToken';
 
 const AudienceDashboard = () => {
     const [user, setUser] = useState(null);
-const [clientId, setClientId] = useState<string | null>(null);
+    const [clientId, setClientId] = useState<string | null>(null);
 
-useEffect(() => {
-    const fetchUser = async () => {
-        const userInfo = await getUserInfo();
-        if (!userInfo) {
-            router.push("/");
-        } else {
-            setUser(userInfo);
-            setClientId(userInfo.id?.toString() || null);
-        }
-    };
-    fetchUser();
-}, []);
+    useEffect(() => {
+        const fetchUser = async () => {
+            const userInfo = await getUserInfo();
+            if (!userInfo) {
+                router.push("/");
+            } else {
+                setUser(userInfo);
+                setClientId(userInfo.id?.toString() || null);
+            }
+        };
+        fetchUser();
+    }, []);
 
-const router = useRouter();
-const { theme } = useTheme();
+    const router = useRouter();
+    const { theme } = useTheme();
 
-// Conditionally call APIs only when clientId is available
-const { data: clientData, isLoading: clientLoading, isError: clientError } = useGetClientByIdQuery(
-    clientId!, 
-    { skip: !clientId }
-);
+    // Conditionally call APIs only when clientId is available
+    const { data: clientData, isLoading: clientLoading, isError: clientError } = useGetClientByIdQuery(
+        clientId!,
+        { skip: !clientId }
+    );
 
-const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
-    clientId!,
-    { skip: !clientId }
-);
+    const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
+        clientId!,
+        { skip: !clientId }
+    );
 
     if (clientLoading) {
         return (
@@ -87,7 +85,7 @@ const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
     const stats = statsData?.data;
 
     return (
-        <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'} p-4 md:p-6`}>
+        <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'} p-2 md:p-3 lg:p-4`}>
             {/* Header */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
@@ -95,14 +93,12 @@ const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
                 transition={{ duration: 0.3 }}
                 className="mb-8"
             >
-                <div className="flex items-center gap-4 mb-6">
-                    <BackButton />
-
+                <div className="flex items-center gap-4 mb-4">
                     <div>
-                        <h1 className={`text-2xl md:text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        <h1 className={`text-xl md:text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Audience Management
                         </h1>
-                        <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        <p className={`mt-1 text-sm md:text-base ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             Manage phone numbers and messages for {client.fullName}
                         </p>
                     </div>
@@ -116,7 +112,7 @@ const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
                     className={`${theme === 'dark'
                         ? 'bg-gray-800 border-gray-700'
                         : 'bg-white border-gray-200'
-                        } border rounded-xl p-6 shadow-lg transition-colors duration-300`}
+                        } border rounded-xl py-6 px-2 md:px-4 lg:px-6 shadow-lg transition-colors duration-300`}
                 >
                     <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                         {/* Client Avatar */}
@@ -129,6 +125,7 @@ const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
                                     <img
                                         src={client.photo}
                                         alt={client.fullName}
+                                        
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
@@ -144,11 +141,11 @@ const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
                         {/* Client Info */}
                         <div className="flex-1">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div>
+                                <div className='flex items-center gap-x-2'>
                                     <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                                         {client.fullName}
                                     </h2>
-                                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <span className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${client.status === 'active' ?
                                             (theme === 'dark' ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700') :
                                             client.status === 'pending' ?
@@ -157,27 +154,14 @@ const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
                                             }`}>
                                             {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
                                         </span>
-                                        <span className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${theme === 'dark' ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
-                                            }`}>
-                                            Client
-                                        </span>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4">
-                                    <div className="text-right">
-                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                            Client ID
-                                        </p>
-                                        <p className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                            #{client.id.toString().padStart(4, '0')}
-                                        </p>
-                                    </div>
-                                </div>
+
                             </div>
 
                             {/* Contact Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
                                 <div className="flex items-center gap-3">
                                     <div className={`p-2 rounded-lg transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'
                                         }`}>
@@ -189,6 +173,21 @@ const { data: statsData, isLoading: statsLoading } = useGetAudienceStatsQuery(
                                         </p>
                                         <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                                             {client.mobileNo}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'
+                                        }`}>
+                                        <Phone className="w-4 h-4 text-blue-500" />
+                                    </div>
+                                    <div>
+                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                            Email
+                                        </p>
+                                        <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                            {client.email}
                                         </p>
                                     </div>
                                 </div>

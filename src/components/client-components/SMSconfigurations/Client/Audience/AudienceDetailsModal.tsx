@@ -8,12 +8,10 @@ import {
     Users,
     Phone,
     MessageSquare,
-    Calendar,
     Hash,
     Send,
     Trash2,
     Plus,
-    Clock,
     ChevronDown,
     ChevronUp
 } from "lucide-react";
@@ -22,12 +20,22 @@ import { useTheme } from "@/hooks/useThemeContext";
 import {
     useSendSMSToAllAudienceMutation,
     useRemovePhoneNumbersMutation,
-    useAddPhoneNumbersMutation
+    // useAddPhoneNumbersMutation
 } from "@/redux/api/sms-configurations/audienceApi";
 
 interface AudienceDetailsModalProps {
     isOpen: boolean;
-    audience: any;
+    audience: {
+        id: number;
+        configName: string;
+        totalNumbers: number;
+        createdAt: string;
+        updatedAt: string;
+        phoneNumbers: Array<{
+            phoneNumber: string;
+            message: string;
+        }>;
+    };
     client: {
         id: number;
         fullName: string;
@@ -35,7 +43,7 @@ interface AudienceDetailsModalProps {
         mobileNo: string;
     };
     onClose: () => void;
-    onEdit: (audience: any) => void;
+    onEdit: (audience: unknown) => void;
     onPhoneNumberClick: (data: { audienceId: number; phoneNumber: string; message: string }) => void;
 }
 
@@ -57,7 +65,7 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
 
     const [sendSMSToAll] = useSendSMSToAllAudienceMutation();
     const [removePhoneNumbers] = useRemovePhoneNumbersMutation();
-    const [addPhoneNumbers] = useAddPhoneNumbersMutation();
+    // const [addPhoneNumbers] = useAddPhoneNumbersMutation();
 
     if (!isOpen || !audience) return null;
 
@@ -91,7 +99,7 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
         if (selectedNumbers.length === audience.phoneNumbers.length) {
             setSelectedNumbers([]);
         } else {
-            setSelectedNumbers(audience.phoneNumbers.map((p: any) => p.phoneNumber));
+            setSelectedNumbers(audience.phoneNumbers.map((p: { phoneNumber: string }) => p.phoneNumber));
         }
     };
 
@@ -105,6 +113,7 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
 
             toast.success(`Sent ${result.data.sent} messages successfully`);
         } catch (error) {
+            console.log(error)
             toast.error("Failed to send messages");
         } finally {
             setIsSending(false);
@@ -128,41 +137,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
             setSelectedNumbers([]);
             onClose(); // Close modal to refresh data
         } catch (error) {
+            console.log(error)
             toast.error("Failed to remove phone numbers");
-        }
-    };
-
-    const handleAddPhoneNumber = async () => {
-        if (!newPhoneNumber.trim() || !newMessage.trim()) {
-            toast.error("Phone number and message are required");
-            return;
-        }
-
-        const phoneRegex = /^[0-9]{10,15}$/;
-        if (!phoneRegex.test(newPhoneNumber)) {
-            toast.error("Phone number must be 10-15 digits");
-            return;
-        }
-
-        try {
-            await addPhoneNumbers({
-                clientId: client.id,
-                id: audience.id,
-                data: {
-                    phoneNumbers: [{
-                        phoneNumber: newPhoneNumber,
-                        message: newMessage
-                    }]
-                }
-            }).unwrap();
-
-            toast.success("Phone number added successfully");
-            setNewPhoneNumber("");
-            setNewMessage("");
-            setShowAddNumbers(false);
-            onClose(); // Close modal to refresh data
-        } catch (error: any) {
-            toast.error(error?.data?.message || "Failed to add phone number");
         }
     };
 
@@ -170,7 +146,7 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
         if (expandedPhoneNumbers.length === audience.phoneNumbers.length) {
             setExpandedPhoneNumbers([]);
         } else {
-            setExpandedPhoneNumbers(audience.phoneNumbers.map((_: any, index: number) => index));
+            setExpandedPhoneNumbers(audience.phoneNumbers.map((_: unknown, index: number) => index));
         }
     };
 
@@ -180,7 +156,7 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 p-4"
+                className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-start justify-center z-50 p-4 overflow-y-auto"
             >
                 <motion.div
                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -188,8 +164,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
                     transition={{ type: "spring", damping: 25, stiffness: 300 }}
                     className={`rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl ${theme === 'dark'
-                            ? 'bg-gray-800 border-gray-700'
-                            : 'bg-white border-gray-200'
+                        ? 'bg-gray-800 border-gray-700'
+                        : 'bg-white border-gray-200'
                         } border`}
                 >
                     {/* Header */}
@@ -198,8 +174,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                         <div className="flex justify-between items-center">
                             <div className="flex items-center gap-4">
                                 <div className={`w-16 h-16 rounded-full overflow-hidden flex items-center justify-center transition-colors duration-300 ${theme === 'dark'
-                                        ? 'bg-blue-500/20 border-2 border-blue-500/30'
-                                        : 'bg-blue-50 border-2 border-blue-500'
+                                    ? 'bg-blue-500/20 border-2 border-blue-500/30'
+                                    : 'bg-blue-50 border-2 border-blue-500'
                                     }`}>
                                     <Users size={32} className="text-blue-500" />
                                 </div>
@@ -222,8 +198,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                 whileTap={{ scale: 0.9 }}
                                 onClick={onClose}
                                 className={`p-2 hover:cursor-pointer hover:bg-red-600 hover:text-red-200 border hover:border-red-600 rounded-full transition-colors duration-300 ${theme === 'dark'
-                                        ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                                        : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                                    ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
                                     }`}
                             >
                                 <X size={20} />
@@ -296,8 +272,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                                 whileTap={{ scale: 0.95 }}
                                                 onClick={toggleAllExpanded}
                                                 className={`px-3 hover:cursor-pointer py-1.5 text-sm rounded transition-colors duration-300 flex items-center gap-1 ${theme === 'dark'
-                                                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                                     }`}
                                             >
                                                 {expandedPhoneNumbers.length === audience.phoneNumbers.length ? (
@@ -317,8 +293,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                                 whileTap={{ scale: 0.95 }}
                                                 onClick={() => setShowAddNumbers(!showAddNumbers)}
                                                 className={`px-3 hover:cursor-pointer py-1.5 text-sm rounded transition-colors duration-300 flex items-center gap-1 ${theme === 'dark'
-                                                        ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30'
-                                                        : 'bg-blue-500 text-white hover:bg-blue-600'
+                                                    ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30'
+                                                    : 'bg-blue-500 text-white hover:bg-blue-600'
                                                     }`}
                                             >
                                                 <Plus size={14} />
@@ -328,54 +304,54 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                     </div>
 
                                     {/* Add Phone Number Form */}
-{showAddNumbers && (
-    <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: "auto" }}
-        exit={{ opacity: 0, height: 0 }}
-        className={`mt-4 p-4 rounded-lg transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'
-            }`}
-    >
-        <div className="space-y-4">
-            <div>
-                <label className={`block text-xs font-medium mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                    Phone Number
-                </label>
-                <input
-                    type="text"
-                    value={newPhoneNumber}
-                    onChange={(e) => setNewPhoneNumber(e.target.value)}
-                    placeholder="8801712345678"
-                    className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ${theme === 'dark'
-                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
-                            : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-                        } border`}
-                />
-            </div>
-            <div>
-                <div className="flex justify-between items-center mb-1">
-                    <label className={`block text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                        Message
-                    </label>
-                    {/* Add Use Config Message button here if you have config data available */}
-                </div>
-                <textarea
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Enter message for this number..."
-                    rows={3}
-                    className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 resize-none ${theme === 'dark'
-                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
-                            : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-                        } border`}
-                />
-            </div>
-        </div>
-        {/* ... rest of the code remains the same ... */}
-    </motion.div>
-)}
+                                    {showAddNumbers && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className={`mt-4 p-4 rounded-lg transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'
+                                                }`}
+                                        >
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className={`block text-xs font-medium mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                                                        }`}>
+                                                        Phone Number
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={newPhoneNumber}
+                                                        onChange={(e) => setNewPhoneNumber(e.target.value)}
+                                                        placeholder="8801712345678"
+                                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ${theme === 'dark'
+                                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
+                                                            : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
+                                                            } border`}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-1">
+                                                        <label className={`block text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                                                            }`}>
+                                                            Message
+                                                        </label>
+                                                        {/* Add Use Config Message button here if you have config data available */}
+                                                    </div>
+                                                    <textarea
+                                                        value={newMessage}
+                                                        onChange={(e) => setNewMessage(e.target.value)}
+                                                        placeholder="Enter message for this number..."
+                                                        rows={3}
+                                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 resize-none ${theme === 'dark'
+                                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
+                                                            : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
+                                                            } border`}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {/* ... rest of the code remains the same ... */}
+                                        </motion.div>
+                                    )}
                                 </div>
 
                                 {/* Phone Numbers List */}
@@ -388,15 +364,15 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                         </div>
                                     ) : (
                                         <div className="divide-y transition-colors duration-300">
-                                            {audience.phoneNumbers.map((phone: any, index: number) => (
+                                            {audience.phoneNumbers.map((phone: { phoneNumber: string, message: string }, index: number) => (
                                                 <motion.div
                                                     key={index}
                                                     initial={{ opacity: 0, x: -20 }}
                                                     animate={{ opacity: 1, x: 0 }}
                                                     transition={{ delay: index * 0.05 }}
                                                     className={`transition-colors duration-300 ${theme === 'dark'
-                                                            ? 'hover:bg-gray-800/50 border-gray-800'
-                                                            : 'hover:bg-gray-50 border-gray-100'
+                                                        ? 'hover:bg-gray-800/50 border-gray-800'
+                                                        : 'hover:bg-gray-50 border-gray-100'
                                                         } ${expandedPhoneNumbers.includes(index) ? 'bg-gray-50/50 dark:bg-gray-800/30' : ''}`}
                                                 >
                                                     <div className="p-4">
@@ -407,8 +383,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                                                     checked={selectedNumbers.includes(phone.phoneNumber)}
                                                                     onChange={() => toggleNumberSelection(phone.phoneNumber)}
                                                                     className={`mt-1 hover:cursor-pointer rounded focus:ring-blue-500 transition-colors duration-300 ${theme === 'dark'
-                                                                            ? 'text-blue-500 bg-gray-700 border-gray-600'
-                                                                            : 'text-blue-600 border-gray-300'
+                                                                        ? 'text-blue-500 bg-gray-700 border-gray-600'
+                                                                        : 'text-blue-600 border-gray-300'
                                                                         }`}
                                                                 />
                                                                 <div
@@ -456,8 +432,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                                                         message: phone.message
                                                                     })}
                                                                     className={`p-1.5 hover:cursor-pointer rounded transition-colors duration-300 ${theme === 'dark'
-                                                                            ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/10'
-                                                                            : 'text-blue-600 hover:text-blue-800 hover:bg-blue-50'
+                                                                        ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/10'
+                                                                        : 'text-blue-600 hover:text-blue-800 hover:bg-blue-50'
                                                                         }`}
                                                                     title="Edit/Send to this number"
                                                                 >
@@ -469,8 +445,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                                                     whileTap={{ scale: 0.9 }}
                                                                     onClick={() => togglePhoneNumberExpansion(index)}
                                                                     className={`p-1.5 hover:cursor-pointer rounded transition-colors duration-300 ${theme === 'dark'
-                                                                            ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                                                                            : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                                                                        ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                                                                        : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
                                                                         }`}
                                                                 >
                                                                     {expandedPhoneNumbers.includes(index) ? (
@@ -495,8 +471,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     className={`p-4 rounded-lg border transition-colors duration-300 ${theme === 'dark'
-                                            ? 'bg-gray-900/50 border-gray-700'
-                                            : 'bg-blue-50/50 border-blue-100'
+                                        ? 'bg-gray-900/50 border-gray-700'
+                                        : 'bg-blue-50/50 border-blue-100'
                                         }`}
                                 >
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -524,8 +500,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                                 whileTap={{ scale: 0.95 }}
                                                 onClick={handleRemoveSelected}
                                                 className={`px-3 py-1.5 text-sm hover:cursor-pointer rounded transition-colors duration-300 flex items-center gap-1 ${theme === 'dark'
-                                                        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
-                                                        : 'bg-red-500 text-white hover:bg-red-600'
+                                                    ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
+                                                    : 'bg-red-500 text-white hover:bg-red-600'
                                                     }`}
                                             >
                                                 <Trash2 size={14} />
@@ -555,8 +531,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                         onEdit(audience);
                                     }}
                                     className={`px-6 py-2 hover:cursor-pointer rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${theme === 'dark'
-                                            ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30'
-                                            : 'bg-blue-500 text-white hover:bg-blue-600'
+                                        ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30'
+                                        : 'bg-blue-500 text-white hover:bg-blue-600'
                                         }`}
                                 >
                                     <Edit size={16} />
@@ -568,8 +544,8 @@ const AudienceDetailsModal: React.FC<AudienceDetailsModalProps> = ({
                                     onClick={handleSendToAll}
                                     disabled={isSending}
                                     className={`px-6 py-2 hover:cursor-pointer rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${theme === 'dark'
-                                            ? 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 disabled:opacity-50'
-                                            : 'bg-purple-500 text-white hover:bg-purple-600 disabled:opacity-50'
+                                        ? 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 disabled:opacity-50'
+                                        : 'bg-purple-500 text-white hover:bg-purple-600 disabled:opacity-50'
                                         }`}
                                 >
                                     <Send size={16} />

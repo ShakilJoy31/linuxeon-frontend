@@ -1,7 +1,6 @@
 
 
 import AudienceDashboard from "@/components/client-components/SMSconfigurations/Client/Audience/AudienceDashboard";
-import ClientsContent from "@/components/client-components/User/AllUser";
 import { generateDynamicMetadata } from "@/metadata/generateMetadata";
 import { Suspense } from "react";
 

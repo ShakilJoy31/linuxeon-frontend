@@ -5,26 +5,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Plus, Trash2, Phone, MessageSquare, FileUp, Check, Download } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useTheme } from "@/hooks/useThemeContext";
-import { useCreateAudienceMutation, useUpdateAudienceMutation } from "@/redux/api/sms-configurations/audienceApi";
+import { Audience, PhoneNumberData, useCreateAudienceMutation, useUpdateAudienceMutation } from "@/redux/api/sms-configurations/audienceApi";
 import { useGetSMSByIdQuery } from "@/redux/api/sms-configurations/smsApi";
 
 interface AddEditAudienceModalProps {
     clientId: string | number;
     smsConfigs: Array<{ id: number; appName: string }>;
-    audienceData?: any;
+    audienceData?: Audience;
     isOpen: boolean;
     onClose: (refreshData?: boolean) => void;
-}
-
-interface ExcelRow {
-    phone_number?: string;
-    phoneNumber?: string;
-    number?: string;
-    phone?: string;
-    message?: string;
-    msg?: string;
-    text?: string;
-    content?: string;
 }
 
 const AddEditAudienceModal: React.FC<AddEditAudienceModalProps> = ({
@@ -235,7 +224,7 @@ const AddEditAudienceModal: React.FC<AddEditAudienceModalProps> = ({
                     const errors: string[] = [];
 
                     for (let i = 1; i < sheetData.length; i++) {
-                        const row = sheetData[i] as any[];
+                        const row = sheetData[i] as PhoneNumberData[];
 
                         if (!row || row.length === 0) continue;
 
@@ -447,7 +436,7 @@ const AddEditAudienceModal: React.FC<AddEditAudienceModalProps> = ({
             }
 
             onClose(true);
-        } catch (error: any) {
+        } catch (error) {
             toast.error(error?.data?.message || "An error occurred");
         } finally {
             setIsLoading(false);
@@ -462,7 +451,7 @@ const AddEditAudienceModal: React.FC<AddEditAudienceModalProps> = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 p-4"
+                className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-start justify-center z-50 p-4 overflow-y-auto"
             >
                 <motion.div
                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -546,8 +535,7 @@ const AddEditAudienceModal: React.FC<AddEditAudienceModalProps> = ({
                                             : 'bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-300'
                                             }`}
                                     >
-                                        <Download size={12} />
-                                        Download Sample
+                                        <Download size={12} /> Sample
                                     </motion.button>
                                 </div>
                                 <div className="space-y-3">
@@ -747,10 +735,6 @@ const AddEditAudienceModal: React.FC<AddEditAudienceModalProps> = ({
                                             <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                                                 }`}>
                                                 Phone Numbers ({formData.phoneNumbers.length})
-                                            </span>
-                                            <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                                                }`}>
-                                                Click to edit message
                                             </span>
                                         </div>
                                     </div>

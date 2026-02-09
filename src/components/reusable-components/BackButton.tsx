@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 
 const BackButton: React.FC = () => {
     return (
-        <div className="flex items-center gap-4 mb-6 md:mb-0">
+        <div className="flex items-center gap-4">
             <motion.button
                 onClick={() => window.history.back()}
                 whileHover={{ x: -5 }}
@@ -19,7 +19,7 @@ const BackButton: React.FC = () => {
                 <ArrowLeft className="h-5 w-5 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
 
                 {/* Text */}
-                <span className="text-white font-medium relative">
+                <span className="text-white hidden sm:block font-medium relative">
                     Return
                 </span>
 

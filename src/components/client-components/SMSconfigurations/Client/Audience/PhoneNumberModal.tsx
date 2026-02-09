@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { X, Save, Phone, MessageSquare, Send, Calendar, Clock, Check } from "lucide-react";
+import { X, Phone, MessageSquare, Send, Calendar, Clock, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useTheme } from "@/hooks/useThemeContext";
 import { useSendSMSToAudienceMutation } from "@/redux/api/sms-configurations/audienceApi";
@@ -71,6 +71,7 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
             onUpdate();
             onClose();
         } catch (error) {
+            console.log(error)
             toast.error("Failed to send SMS");
         } finally {
             setIsSending(false);
@@ -102,7 +103,7 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-start justify-center z-50 p-4 overflow-y-auto"
         >
             <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}

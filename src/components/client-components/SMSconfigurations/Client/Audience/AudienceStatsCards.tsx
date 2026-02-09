@@ -11,7 +11,7 @@ interface AudienceStatsCardsProps {
   clientId: string | number;
 }
 
-const AudienceStatsCards: React.FC<AudienceStatsCardsProps> = ({ stats, clientId }) => {
+const AudienceStatsCards: React.FC<AudienceStatsCardsProps> = ({ stats }) => {
   const { theme } = useTheme();
 
   const statCards = [
@@ -50,7 +50,7 @@ const AudienceStatsCards: React.FC<AudienceStatsCardsProps> = ({ stats, clientId
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-xl p-6 shadow-lg mb-6 transition-colors duration-300 ${
+      className={`rounded-xl py-6 px-2 md:px-4 lg:px-6 shadow-lg mb-6 transition-colors duration-300 ${
         theme === 'dark' 
         ? 'bg-gray-800 border-gray-700' 
         : 'bg-white border-gray-200'

@@ -5,9 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Search,
     Filter,
-    X,
     Plus,
-    Loader,
     MessageSquare,
     Users,
     Phone,
@@ -21,12 +19,7 @@ import {
     ChevronLeft,
     MoreVertical,
     Smartphone,
-    FileText,
-    Hash,
-    Mail,
-    Globe,
     CheckCircle,
-    AlertCircle,
     ArrowRight
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -97,14 +90,6 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
         setCurrentPage(1);
     };
 
-    const clearFilters = () => {
-        setFilters({
-            search: "",
-            configId: "",
-        });
-        setCurrentPage(1);
-    };
-
     const handleView = (audience) => {
         setSelectedAudience(audience);
     };
@@ -131,6 +116,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
             setDeleteModal({ isOpen: false, audience: null });
             refetch();
         } catch (error) {
+            console.log(error)
             toast.error('Failed to delete audience');
         }
     };
@@ -189,10 +175,10 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                 className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"
             >
                 <div>
-                    <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                         SMS Audiences
                     </h2>
-                    <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <p className={`mt-1 text-sm md:text-base ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         Manage your SMS audiences and phone numbers
                     </p>
                 </div>
@@ -203,7 +189,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                         setAudienceToEdit(null);
                         setIsAddModalOpen(true);
                     }}
-                    className={`px-5 py-2.5 hover:cursor-pointer rounded-xl transition-all duration-300 flex items-center gap-2 group ${theme === 'dark'
+                    className={`px-5 py-2.5 w-full md:w-auto flex justify-center hover:cursor-pointer rounded-xl transition-all duration-300 items-center gap-2 group ${theme === 'dark'
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/20'
                         : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/30'
                         }`}
@@ -218,9 +204,9 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.3 }}
-                className={`rounded-2xl p-6 shadow-xl transition-colors duration-300 ${theme === 'dark'
-                    ? 'bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700'
-                    : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'
+                className={`rounded-2xl py-6 px-2 md:px-4 lg:px-6 shadow-xl transition-colors duration-300 ${theme === 'dark'
+                    ? 'bg-linear-to-br from-gray-800 to-gray-900 border-gray-700'
+                    : 'bg-linear-to-br from-white to-gray-50 border-gray-200'
                     } border`}
             >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -332,7 +318,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                         ))}
                     </div>
                 ) : audiences.length === 0 ? (
-                    <div className={`text-center py-16 rounded-2xl ${theme === 'dark' ? 'bg-gradient-to-br from-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 to-white'
+                    <div className={`text-center py-16 rounded-2xl ${theme === 'dark' ? 'bg-linear-to-br from-gray-800 to-gray-900' : 'bg-linear-to-br from-gray-50 to-white'
                         }`}>
                         <div className="relative w-24 h-24 mx-auto mb-6">
                             <div className={`absolute inset-0 rounded-full ${theme === 'dark' ? 'bg-blue-500/10' : 'bg-blue-100'}`}></div>
@@ -378,7 +364,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                                 >
 
                                     {/* Card Header */}
-                                    <div className="p-6">
+                                    <div className="py-6 px-2 md:px-4 lg:px-6">
                                         <div className="flex justify-between items-start mb-4">
                                             <div className="flex items-center gap-3">
                                                 <div className={`p-3 rounded-xl ${theme === 'dark' ? 'bg-blue-500/10' : 'bg-blue-100'}`}>
@@ -411,7 +397,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                                         </div>
 
                                         {/* Quick Stats */}
-                                        <div className="grid grid-cols-3 gap-3 mb-4">
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                                             <div className={`text-center p-3 rounded-xl transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50'
                                                 }`}>
                                                 <div className="flex items-center justify-center gap-2 mb-1">
@@ -465,7 +451,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                                                     {audience.totalNumbers} total
                                                 </span>
                                             </div>
-                                            <div className={`grid gap-4 ${audiences.length < 2 ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4' : 'grid-cols-2'}`}>
+                                            <div className={`grid gap-4 ${audiences.length < 2 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-2'}`}>
                                                 {audience.phoneNumbers.map((phone, idx) => (
                                                     <motion.button
                                                         key={idx}
@@ -526,7 +512,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                                     </div>
 
                                     {/* Card Footer */}
-                                    <div className={`px-6 py-4 border-t transition-colors duration-300 ${theme === 'dark'
+                                    <div className={`py-6 px-2 md:px-4 lg:px-6 border-t transition-colors duration-300 ${theme === 'dark'
                                         ? 'bg-gray-900/50 border-gray-700'
                                         : 'bg-gray-50/50 border-gray-200'
                                         }`}>
@@ -578,8 +564,8 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
                                 className={`rounded-2xl p-6 shadow-lg transition-colors duration-300 ${theme === 'dark'
-                                    ? 'bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700'
-                                    : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'
+                                    ? 'bg-linear-to-br from-gray-800 to-gray-900 border-gray-700'
+                                    : 'bg-linear-to-br from-white to-gray-50 border-gray-200'
                                     } border`}
                             >
                                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -719,6 +705,8 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                 )}
             </AnimatePresence>
 
+
+
             {/* Delete Confirmation Modal */}
             <AnimatePresence>
                 {deleteModal.isOpen && (
@@ -726,7 +714,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 p-4"
+                        className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-start justify-center z-50 p-4 overflow-y-auto"
                     >
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
@@ -734,8 +722,8 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                             exit={{ scale: 0.9, opacity: 0 }}
                             transition={{ type: "spring", damping: 25, stiffness: 300 }}
                             className={`rounded-2xl p-8 w-full max-w-md shadow-2xl ${theme === 'dark'
-                                ? 'bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700'
-                                : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'
+                                ? 'bg-linear-to-br from-gray-800 to-gray-900 border-gray-700'
+                                : 'bg-linear-to-br from-white to-gray-50 border-gray-200'
                                 } border`}
                         >
                             <div className="text-center">
@@ -757,7 +745,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                                     This will permanently delete the audience{' '}
                                     <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'
                                         }`}>
-                                        "{deleteModal.audience?.configName}"
+                                        &quot;{deleteModal.audience?.configName}&quot;
                                     </span>{' '}
                                     with{' '}
                                     <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -797,3 +785,6 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
 };
 
 export default AudienceList;
+
+
+ 

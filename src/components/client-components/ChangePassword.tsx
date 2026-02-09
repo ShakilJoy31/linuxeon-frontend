@@ -10,7 +10,6 @@ import {
     EyeOff,
     CheckCircle,
     XCircle,
-    AlertCircle,
     LockKeyhole,
     Shield,
     Sparkles,
@@ -56,7 +55,7 @@ export default function PasswordChange() {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
-    const [passwordSuggestions, setPasswordSuggestions] = useState<string[]>([]);
+    const [, setPasswordSuggestions] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [securityLevel, setSecurityLevel] = useState("");
     const [isGeneratingPassword, setIsGeneratingPassword] = useState(false);
@@ -264,7 +263,7 @@ export default function PasswordChange() {
                 setPasswordSuggestions([]);
                 setSecurityLevel("");
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error("Password change error:", error);
 
             // Error animation

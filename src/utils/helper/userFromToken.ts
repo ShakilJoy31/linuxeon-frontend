@@ -19,7 +19,7 @@ export interface UserInfo {
   role: string;
   name?: string;
   avatar?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Helper function to get token from cookies
@@ -165,7 +165,7 @@ export const canAccessRoute = (
 
 // Example usage in a component or page
 export const handleAuthRedirect = (
-  router: any, 
+  router: import("next/router").NextRouter, 
   currentPath?: string
 ): boolean => {
   const token = getTokenFromCookies();
