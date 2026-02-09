@@ -20,7 +20,7 @@ export default function Footer() {
               alt="SMS Platform"
               width={160}
               height={60}
-              className="w-36 h-auto dark:invert dark:brightness-200 object-contain"
+              className="w-36 h-auto invert brightness-200 object-contain"
             />
           </div>
 

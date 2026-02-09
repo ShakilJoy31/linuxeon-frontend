@@ -152,7 +152,7 @@ export default function ClientCard({ client, onView, onEdit, onDelete, onStatusC
                                         </div>
 
                                         {/* Text */}
-                                        <span className="text-blue-700 dark:text-blue-300 font-semibold group-hover:text-blue-800 dark:group-hover:text-blue-200">
+                                        <span className="text-blue-700 dark:text-blue-300 text-xs xl:text-md group-hover:text-blue-800 dark:group-hover:text-blue-200">
                                             SMS Configuration
                                         </span>
 
@@ -167,12 +167,7 @@ export default function ClientCard({ client, onView, onEdit, onDelete, onStatusC
 
                         {/* Action menu dropdown */}
                         <div className="dropdown dropdown-end">
-                            <button
-                                tabIndex={0}
-                                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                            >
-                                <MoreVertical className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                            </button>
+
                             <ul className="dropdown-content menu p-2 shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl w-40 z-50 backdrop-blur-sm">
                                 <li>
                                     <button

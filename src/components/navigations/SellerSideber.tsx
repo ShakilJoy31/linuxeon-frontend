@@ -121,10 +121,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
             href: "/admin/sms/audience",
           },
           {
-            key: "bulk-sms",
+            key: "send-sms",
             icon: <Send size={16} />,
-            label: "Bulk SMS",
-            href: "/admin/sms/bulk-sms",
+            label: "Send SMS",
+            href: "/admin/sms/send-sms",
           },
           {
             key: "scheduled-sms",

@@ -171,9 +171,7 @@ export default function ClientsContent() {
     const roleStats = [
         { label: 'Clients', value: stats.client, color: 'from-blue-500 to-blue-600', icon: Users },
         { label: 'Admins', value: stats.admin, color: 'from-purple-500 to-purple-600', icon: Key },
-        { label: 'Managers', value: stats.manager, color: 'from-green-500 to-green-600', icon: Building },
-        { label: 'Staff', value: stats.staff, color: 'from-amber-500 to-amber-600', icon: Briefcase },
-        { label: 'Super Admins', value: stats.super_admin, color: 'from-red-500 to-red-600', icon: Crown }
+        { label: 'Super Admin', value: stats.super_admin, color: 'from-red-500 to-red-600', icon: Crown }
     ];
 
     // Pagination controls
@@ -489,7 +487,7 @@ export default function ClientsContent() {
                         )}
                     </div>
                 ) : <LayoutGroup>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <AnimatePresence>
                             {clients.map((client: Client, index: number) => (
                                 <ClientCard

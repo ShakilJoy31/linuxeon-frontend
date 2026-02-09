@@ -495,7 +495,7 @@ const UserSMSConfiguration: React.FC<UserSMSConfigurationProps> = ({ clientId, c
                                 setSmsToEdit(null);
                                 setIsAddSMSModalOpen(true);
                             }}
-                            className={`mt-4 px-4 py-2 rounded-lg transition-colors duration-300 ${
+                            className={`mt-4 px-4 py-2 hover:cursor-pointer rounded-lg transition-colors duration-300 ${
                                 theme === 'dark' 
                                 ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30' 
                                 : 'bg-blue-500 text-white hover:bg-blue-600'
@@ -720,7 +720,7 @@ const UserSMSConfiguration: React.FC<UserSMSConfigurationProps> = ({ clientId, c
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-start justify-center z-50 p-4 overflow-y-auto"
+                        className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 p-4"
                     >
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}

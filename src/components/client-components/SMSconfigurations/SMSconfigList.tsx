@@ -135,21 +135,12 @@ const UserSMSConfigurationPage = () => {
                     <span className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${
                       theme === 'dark' ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
                     }`}>
-                      Client
+                      {client.role}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Client ID
-                    </p>
-                    <p className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      #{client.id.toString().padStart(4, '0')}
-                    </p>
-                  </div>
-                </div>
+               
               </div>
 
               {/* Contact Info */}
