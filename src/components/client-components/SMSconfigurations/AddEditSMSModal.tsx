@@ -455,7 +455,7 @@ const AddEditSMSModal: React.FC<AddEditSMSModalProps> = ({
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => onClose()}
-                                    className={`px-6 py-2 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
+                                    className={`px-2 md:px-3 lg:px-4 hover:cursor-pointer py-2 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
                                         theme === 'dark'
                                         ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -470,7 +470,7 @@ const AddEditSMSModal: React.FC<AddEditSMSModalProps> = ({
                                     type="submit"
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className={`px-6 py-2 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
+                                    className={`px-2 md:px-3 lg:px-4 hover:cursor-pointer py-2 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
                                         theme === 'dark'
                                         ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30'
                                         : 'bg-blue-500 text-white hover:bg-blue-600'

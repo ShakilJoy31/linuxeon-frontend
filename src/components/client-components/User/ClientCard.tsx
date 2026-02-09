@@ -15,8 +15,7 @@ import {
     Trash2,
     Eye,
     UserCheck,
-    UserX,
-    MoreVertical
+    UserX
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 

@@ -27,8 +27,6 @@ import {
     ChevronsRight,
     Users,
     Key,
-    Building,
-    Briefcase,
     Crown
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -122,6 +120,7 @@ export default function ClientsContent() {
         try {
             await deleteClient(clientToDelete.id).unwrap();
             toast.success(`${clientToDelete.fullName} deleted successfully`);
+            refetch()
             setShowDeleteModal(false);
             setClientToDelete(null);
         } catch (err) {

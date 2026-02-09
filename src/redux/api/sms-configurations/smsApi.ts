@@ -1,26 +1,28 @@
-import { SMS, SMSResponse, SMSStats } from '@/utils/interface/smsConfiguration';
+
+import { SMS, SMSResponse, SMSStats } from "@/utils/interface/smsConfiguration";
 import { apiSlice } from "../apiSlice";
+import { SMSSendResponse } from "@/utils/interface/sendSmsInterface";
 
 export const smsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Get all SMS for a client
-    getClientSMS: builder.query<SMSResponse, { 
-      clientId: string | number; 
-      page?: number; 
-      limit?: number; 
-      search?: string; 
-      status?: string; 
-      type?: string; 
+    getClientSMS: builder.query<SMSResponse, {
+      clientId: string | number;
+      page?: number;
+      limit?: number;
+      search?: string;
+      status?: string;
+      type?: string;
     }>({
       query: ({ clientId, page = 1, limit = 10, ...params }) => {
         const queryParams = new URLSearchParams();
         queryParams.append('page', page.toString());
         queryParams.append('limit', limit.toString());
-        
+
         if (params.search) queryParams.append('search', params.search);
         if (params.status) queryParams.append('status', params.status);
         if (params.type) queryParams.append('type', params.type);
-        
+
         return {
           url: `/sms-configurations/${clientId}/all?${queryParams.toString()}`,
           method: "GET",
@@ -86,6 +88,56 @@ export const smsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'SMS', id }, 'SMS'],
     }),
+
+
+
+
+
+
+
+
+
+
+    //! SMS sending api
+    sendSMS: builder.mutation<SMSSendResponse, {
+      clientId: string | number;
+      configId: string | number;
+      phoneNumbers: string[];
+      messages?: string[]; // Optional custom messages array
+    }>({
+      query: ({ clientId, configId, phoneNumbers, messages }) => ({
+        url: `/sms/${clientId}/send`,
+        method: 'POST',
+        body: {
+          configId,
+          phoneNumbers,
+          ...(messages && { messages }) // Include messages only if provided
+        },
+      }),
+      invalidatesTags: ['SMS'],
+    }),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   }),
 });
 
@@ -98,4 +150,5 @@ export const {
   useDeleteSMSMutation,
   useTestSMSMutation,
   useToggleSMSStatusMutation,
+  useSendSMSMutation,
 } = smsApi;

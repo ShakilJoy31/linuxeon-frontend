@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { X, Phone, MessageSquare, Send, Calendar, Clock, Check } from "lucide-react";
+import { X, Phone, MessageSquare, Send, Calendar, Clock, Check, AlertCircle } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useTheme } from "@/hooks/useThemeContext";
-import { useSendSMSToAudienceMutation } from "@/redux/api/sms-configurations/audienceApi";
+import { useSendSMSMutation } from "@/redux/api/sms-configurations/smsApi"; // Updated to use the new API
 import { useGetSMSByIdQuery } from "@/redux/api/sms-configurations/smsApi";
+import { SMSSendResult } from "@/utils/interface/sendSmsInterface";
 
 interface PhoneNumberModalProps {
     isOpen: boolean;
@@ -14,7 +15,7 @@ interface PhoneNumberModalProps {
     audienceId: number;
     phoneNumber: string;
     message: string;
-    configId?: string | number; // Add configId to fetch the config message
+    configId: string | number; // Changed to required
     onClose: () => void;
     onUpdate: () => void;
 }
@@ -22,10 +23,9 @@ interface PhoneNumberModalProps {
 const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
     isOpen,
     clientId,
-    audienceId,
     phoneNumber: initialPhoneNumber,
     message: initialMessage,
-    configId, // Get configId from props
+    configId,
     onClose,
     onUpdate
 }) => {
@@ -36,43 +36,121 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
     const [isScheduling, setIsScheduling] = useState(false);
     const [isSending, setIsSending] = useState(false);
     const [useConfigMessage, setUseConfigMessage] = useState(false);
+    const [sendStatus, setSendStatus] = useState<{
+        success?: number;
+        failed?: number;
+        results?: SMSSendResult[];
+        errors?: Array<{
+            phoneNumber: string;
+            error: string;
+            response?: unknown;
+        }>;
+    } | null>(null);
 
-    const [sendSMS] = useSendSMSToAudienceMutation();
+    // Use the new sendSMS mutation (not sendSMSToAudience)
+    const [sendSMS] = useSendSMSMutation();
 
-    // Fetch SMS config data if configId is provided
+    // Fetch SMS config data using configId
     const { data: smsConfigData } = useGetSMSByIdQuery(
-        { clientId, id: configId || 0 },
-        { skip: !configId || !isOpen }
+        { clientId, id: configId },
+        { skip: !configId || !isOpen || configId === 0 }
     );
 
     // Get the config message from the SMS config
     const configMessage = smsConfigData?.data?.message || "";
 
-    // Reset useConfigMessage when modal opens
+    // Reset states when modal opens
     useEffect(() => {
         if (isOpen) {
             setPhoneNumber(initialPhoneNumber);
             setMessage(initialMessage);
             setUseConfigMessage(false);
+            setSendStatus(null);
         }
     }, [isOpen, initialPhoneNumber, initialMessage]);
 
     const handleSendSMS = async () => {
+        if (!configId || configId === 0) {
+            toast.error("SMS configuration is required");
+            return;
+        }
+
+        if (!phoneNumber.trim()) {
+            toast.error("Phone number is required");
+            return;
+        }
+
+        // Determine which message to send
+        let messageToSend = message;
+        
+        // If useConfigMessage is true OR message is empty, use config message
+        if (useConfigMessage || !message.trim()) {
+            if (!configMessage.trim()) {
+                toast.error("Configuration message is empty");
+                return;
+            }
+            messageToSend = configMessage;
+        }
+
+        // If message is still empty after checking config
+        if (!messageToSend.trim()) {
+            toast.error("Message cannot be empty");
+            return;
+        }
+
         try {
             setIsSending(true);
+            setSendStatus(null);
 
-            await sendSMS({
+            // Call the new SMS sending API with configId and optional custom message
+            const result = await sendSMS({
                 clientId,
-                id: audienceId,
-                data: { phoneNumbers: [phoneNumber] }
+                configId,
+                phoneNumbers: [phoneNumber.trim()],
+                messages: useConfigMessage ? undefined : [messageToSend] // Only send custom message if not using config
             }).unwrap();
 
-            toast.success("SMS sent successfully!");
+            console.log("SMS Result:", result);
+
+            if (result.success) {
+                if (result.data.results && result.data.results.length > 0) {
+                    const sentResult = result.data.results[0];
+                    if (sentResult.success) {
+                        const messageType = sentResult.messageUsed === 'custom' ? 'Custom' : 'Config';
+                        toast.success(`To: ${phoneNumber} - ${messageType} message sent successfully`);
+                    } else {
+                        toast.error(`To: ${phoneNumber} - ${sentResult.error || 'Failed to send'}`);
+                    }
+                }
+
+                setSendStatus({
+                    success: result.data.successful,
+                    failed: result.data.failed,
+                    results: result.data.results,
+                    errors: result.data.errors
+                });
+            } else {
+                toast.error(result.message || "Failed to send SMS");
+            }
+
             onUpdate();
-            onClose();
-        } catch (error) {
-            console.log(error)
-            toast.error("Failed to send SMS");
+            
+            // Don't close automatically if there were failures
+            if (result.data.failed === 0) {
+                setTimeout(() => onClose(), 1500);
+            }
+        } catch (error: unknown) {
+            console.error('Send SMS error:', error);
+            
+            let errorMessage = "Failed to send SMS";
+            if (error && typeof error === 'object' && 'data' in error && 
+                error.data && typeof error.data === 'object' && 'message' in error.data) {
+                errorMessage = (error.data as { message: string }).message;
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+            
+            toast.error(errorMessage);
         } finally {
             setIsSending(false);
         }
@@ -85,7 +163,7 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
         }
 
         toast.success(`SMS scheduled for ${new Date(scheduledTime).toLocaleString()}`);
-        // Here you would implement actual scheduling logic
+        // Implement actual scheduling logic here
     };
 
     const handleUseConfigMessage = () => {
@@ -93,6 +171,22 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
             setMessage(configMessage);
             setUseConfigMessage(true);
             toast.success("Config message applied!");
+        } else {
+            toast.error("Config message not available");
+        }
+    };
+
+    const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newMessage = e.target.value;
+        setMessage(newMessage);
+        
+        // Automatically toggle useConfigMessage based on content
+        if (configMessage) {
+            if (newMessage === configMessage) {
+                setUseConfigMessage(true);
+            } else if (useConfigMessage && newMessage !== configMessage) {
+                setUseConfigMessage(false);
+            }
         }
     };
 
@@ -127,11 +221,11 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                             <div>
                                 <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'
                                     }`}>
-                                    Phone Number Details
+                                    Send SMS
                                 </h2>
                                 <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                                     }`}>
-                                    Edit or send message to this number
+                                    {useConfigMessage ? 'Using config message' : 'Using custom message'}
                                 </p>
                             </div>
                         </div>
@@ -139,7 +233,7 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={onClose}
-                            className={`p-2 rounded-full transition-colors duration-300 ${theme === 'dark'
+                            className={`p-2 hover:cursor-pointer hover:bg-red-600 hover:text-red-200 border hover:border-red-600 rounded-full transition-colors duration-300 ${theme === 'dark'
                                     ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
                                     : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
                                 }`}
@@ -151,6 +245,21 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
 
                 {/* Content */}
                 <div className="p-6 space-y-6">
+                    {/* SMS Config Info */}
+                    {smsConfigData?.data && (
+                        <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
+                            }`}>
+                            <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                                }`}>
+                                Config: <span className="font-bold">{smsConfigData.data.appName}</span>
+                            </p>
+                            <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                                }`}>
+                                Sender ID: {smsConfigData.data.senderId} • Type: {smsConfigData.data.type}
+                            </p>
+                        </div>
+                    )}
+
                     {/* Phone Number Input */}
                     <div>
                         <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -167,6 +276,7 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                                         ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
                                         : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
                                     } border`}
+                                placeholder="Enter phone number"
                             />
                         </div>
                     </div>
@@ -177,6 +287,14 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                             <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                                 }`}>
                                 Message
+                                {useConfigMessage && (
+                                    <span className={`ml-2 text-xs px-2 py-1 rounded ${theme === 'dark' 
+                                        ? 'bg-blue-500/20 text-blue-300' 
+                                        : 'bg-blue-100 text-blue-700'
+                                    }`}>
+                                        Using Config
+                                    </span>
+                                )}
                             </label>
                             <div className="flex items-center gap-2">
                                 <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
@@ -201,7 +319,7 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                                         {useConfigMessage ? (
                                             <>
                                                 <Check size={12} />
-                                                Using Config
+                                                Config Applied
                                             </>
                                         ) : (
                                             <>
@@ -217,12 +335,7 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                             <MessageSquare className="absolute top-3 left-3 text-gray-400 h-4 w-4" />
                             <textarea
                                 value={message}
-                                onChange={(e) => {
-                                    setMessage(e.target.value);
-                                    if (useConfigMessage && e.target.value !== configMessage) {
-                                        setUseConfigMessage(false);
-                                    }
-                                }}
+                                onChange={handleMessageChange}
                                 maxLength={500}
                                 rows={4}
                                 className={`w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 resize-none ${theme === 'dark'
@@ -242,6 +355,31 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                         )}
                     </div>
 
+                    {/* Send Status Display */}
+                    {sendStatus && (
+                        <div className={`p-3 rounded-lg ${
+                            sendStatus.failed === 0
+                                ? theme === 'dark' ? 'bg-green-500/10 border border-green-500/20' : 'bg-green-50 border border-green-200'
+                                : theme === 'dark' ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-yellow-50 border border-yellow-200'
+                        }`}>
+                            <div className="flex items-center gap-2">
+                                {sendStatus.failed === 0 ? (
+                                    <Check className="h-4 w-4 text-green-500" />
+                                ) : (
+                                    <AlertCircle className="h-4 w-4 text-yellow-500" />
+                                )}
+                                <p className={`text-sm font-medium ${
+                                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                                }`}>
+                                    {sendStatus.failed === 0
+                                        ? `SMS sent successfully to ${sendStatus.success} number(s)`
+                                        : `Sent to ${sendStatus.success}, failed for ${sendStatus.failed}`
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Schedule Option */}
                     <div>
                         <div className="flex items-center gap-2 mb-3">
@@ -250,13 +388,15 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                                 id="schedule"
                                 checked={isScheduling}
                                 onChange={(e) => setIsScheduling(e.target.checked)}
-                                className={`w-4 h-4 rounded focus:ring-blue-500 transition-colors duration-300 ${theme === 'dark'
+                                className={`w-4 h-4 rounded focus:ring-blue-500 transition-colors duration-300 ${
+                                    theme === 'dark'
                                         ? 'text-blue-500 bg-gray-700 border-gray-600'
                                         : 'text-blue-600 border-gray-300'
-                                    }`}
+                                }`}
                             />
-                            <label htmlFor="schedule" className={`text-sm flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                                }`}>
+                            <label htmlFor="schedule" className={`text-sm flex items-center gap-2 ${
+                                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
                                 <Calendar size={14} />
                                 Schedule for later
                             </label>
@@ -264,8 +404,9 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
 
                         {isScheduling && (
                             <div className="space-y-2">
-                                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                                    }`}>
+                                <label className={`block text-sm font-medium ${
+                                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                                }`}>
                                     Schedule Time
                                 </label>
                                 <div className="relative">
@@ -275,10 +416,11 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                                         value={scheduledTime}
                                         onChange={(e) => setScheduledTime(e.target.value)}
                                         min={new Date().toISOString().slice(0, 16)}
-                                        className={`w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ${theme === 'dark'
+                                        className={`w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ${
+                                            theme === 'dark'
                                                 ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
                                                 : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-                                            } border`}
+                                        } border`}
                                     />
                                 </div>
                             </div>
@@ -287,18 +429,20 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className={`p-6 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-                    }`}>
+                <div className={`p-6 border-t transition-colors duration-300 ${
+                    theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
+                }`}>
                     <div className="flex flex-col sm:flex-row gap-3">
                         <motion.button
                             type="button"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={onClose}
-                            className={`flex-1 hover:cursor-pointer px-4 py-3 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${theme === 'dark'
+                            className={`flex-1 hover:cursor-pointer px-4 py-3 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
+                                theme === 'dark'
                                     ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                            }`}
                         >
                             <X size={18} />
                             Cancel
@@ -309,27 +453,41 @@ const PhoneNumberModal: React.FC<PhoneNumberModalProps> = ({
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleScheduleSMS}
-                                className={`flex-1 hover:cursor-pointer px-4 py-3 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${theme === 'dark'
+                                className={`flex-1 hover:cursor-pointer px-4 py-3 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
+                                    theme === 'dark'
                                         ? 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30'
                                         : 'bg-purple-500 text-white hover:bg-purple-600'
-                                    }`}
+                                }`}
                             >
-                                <Calendar size={18} />
                                 Schedule SMS
+                                <Calendar size={18} />
                             </motion.button>
                         ) : (
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleSendSMS}
-                                disabled={isSending}
-                                className={`flex-1 px-4 hover:cursor-pointer py-3 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${theme === 'dark'
-                                        ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 disabled:opacity-50'
-                                        : 'bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50'
-                                    }`}
+                                disabled={isSending || !configId || configId === 0 || !phoneNumber.trim() || (!message.trim() && !configMessage.trim())}
+                                className={`flex-1 px-4 hover:cursor-pointer py-3 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
+                                    theme === 'dark'
+                                        ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed'
+                                        : 'bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed'
+                                }`}
                             >
-                                <Send size={18} />
-                                {isSending ? "Sending..." : "Send SMS Now"}
+                                {isSending ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Sending...
+                                    </>
+                                ) : (
+                                    <>
+                                        {useConfigMessage ? 'Send Config SMS' : 'Send Custom SMS'}
+                                        <Send size={18} />
+                                    </>
+                                )}
                             </motion.button>
                         )}
                     </div>

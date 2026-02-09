@@ -40,6 +40,49 @@ interface AudienceListProps {
     };
 }
 
+interface PhoneNumberModalData {
+    audienceId: number;
+    phoneNumber: string;
+    message: string;
+    configId: string | number;
+}
+
+interface SmsConfig {
+    id: string | number;
+    appName: string;
+}
+
+interface PhoneNumber {
+    id?: number;
+    phoneNumber: string;
+    message: string;
+    status?: string;
+}
+
+interface Audience {
+    id: number;
+    configName: string;
+    configId?: string | number;
+    totalNumbers: number;
+    phoneNumbers: PhoneNumber[];
+    createdAt: string;
+    updatedAt: string;
+    status?: string;
+}
+
+interface PaginationData {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+}
+
+interface AudienceApiResponse {
+    data: Audience[];
+    smsConfigs: SmsConfig[];
+    pagination: PaginationData;
+}
+
 const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
     const { theme } = useTheme();
     const [filters, setFilters] = useState({
@@ -48,18 +91,14 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
     });
 
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 9; // Changed to 9 for 3x3 grid layout
+    const itemsPerPage = 9;
 
-    const [selectedAudience, setSelectedAudience] = useState(null);
-    const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<{
-        audienceId: number;
-        phoneNumber: string;
-        message: string;
-    } | null>(null);
+    const [selectedAudience, setSelectedAudience] = useState<Audience | null>(null);
+    const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<PhoneNumberModalData | null>(null);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [audienceToEdit, setAudienceToEdit] = useState(null);
-    const [deleteModal, setDeleteModal] = useState({ isOpen: false, audience: null });
+    const [audienceToEdit, setAudienceToEdit] = useState<Audience | null>(null);
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; audience: Audience | null }>({ isOpen: false, audience: null });
     const [expandedAudience, setExpandedAudience] = useState<number | null>(null);
 
     const {
@@ -72,7 +111,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
         page: currentPage,
         limit: itemsPerPage,
         ...filters
-    });
+    }) as { data: AudienceApiResponse | undefined; isLoading: boolean; isError: boolean; refetch: () => void; };
 
     const [deleteAudience] = useDeleteAudienceMutation();
 
@@ -85,21 +124,27 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
         itemsPerPage: 9
     };
 
+    // Helper function to get configId from configName
+    const getConfigIdByName = (configName: string): string | number | null => {
+        const config = smsConfigs.find(config => config.appName === configName);
+        return config ? config.id : null;
+    };
+
     const handleFilterChange = (key: string, value: string) => {
         setFilters(prev => ({ ...prev, [key]: value }));
         setCurrentPage(1);
     };
 
-    const handleView = (audience) => {
+    const handleView = (audience: Audience) => {
         setSelectedAudience(audience);
     };
 
-    const handleEdit = (audience) => {
+    const handleEdit = (audience: Audience) => {
         setAudienceToEdit(audience);
         setIsAddModalOpen(true);
     };
 
-    const handleDeleteClick = (audience) => {
+    const handleDeleteClick = (audience: Audience) => {
         setDeleteModal({ isOpen: true, audience });
     };
 
@@ -119,6 +164,29 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
             console.log(error)
             toast.error('Failed to delete audience');
         }
+    };
+
+    // Function to handle phone number click
+    const handlePhoneNumberClick = (audience: Audience, phone: PhoneNumber) => {
+        // Try to get configId from audience object first
+        let configId = audience.configId;
+
+        // If configId is not in audience, try to find it from configName
+        if (!configId) {
+            configId = getConfigIdByName(audience.configName);
+        }
+
+        if (!configId) {
+            toast.error("Could not find SMS configuration");
+            return;
+        }
+
+        setSelectedPhoneNumber({
+            audienceId: audience.id,
+            phoneNumber: phone.phoneNumber,
+            message: phone.message,
+            configId: configId
+        });
     };
 
     const formatDate = (dateString: string) => {
@@ -257,7 +325,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                                         } border`}
                                 >
                                     <option value="">All Configurations</option>
-                                    {smsConfigs.map((config) => (
+                                    {smsConfigs.map((config: SmsConfig) => (
                                         <option key={config.id} value={config.id}>
                                             {config.appName}
                                         </option>
@@ -347,7 +415,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                     <>
                         {/* Grid Layout */}
                         <div className={`grid grid-cols-1 ${audiences.length < 2 ? 'lg:grid-cols-1' : 'lg:grid-cols-2'} gap-6`}>
-                            {audiences.map((audience, index) => (
+                            {audiences.map((audience: Audience, index: number) => (
                                 <motion.div
                                     key={audience.id}
                                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -452,16 +520,12 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                                                 </span>
                                             </div>
                                             <div className={`grid gap-4 ${audiences.length < 2 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-2'}`}>
-                                                {audience.phoneNumbers.map((phone, idx) => (
+                                                {audience.phoneNumbers.map((phone: PhoneNumber, idx: number) => (
                                                     <motion.button
                                                         key={idx}
                                                         whileHover={{ x: 4 }}
                                                         whileTap={{ scale: 0.98 }}
-                                                        onClick={() => setSelectedPhoneNumber({
-                                                            audienceId: audience.id,
-                                                            phoneNumber: phone.phoneNumber,
-                                                            message: phone.message
-                                                        })}
+                                                        onClick={() => handlePhoneNumberClick(audience, phone)}
                                                         className={`w-full flex hover:cursor-pointer items-center justify-between p-3 rounded-lg transition-all duration-300 ${theme === 'dark'
                                                             ? 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
                                                             : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
@@ -662,10 +726,17 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                 {isAddModalOpen && (
                     <AddEditAudienceModal
                         clientId={clientId}
-                        smsConfigs={smsConfigs}
-                        audienceData={audienceToEdit}
+                        smsConfigs={smsConfigs.map(config => ({
+                            id: Number(config.id), // Cast to number
+                            appName: config.appName
+                        }))}
+                        audienceData={audienceToEdit ? {
+                            ...audienceToEdit,
+                            configId: audienceToEdit.configId ? Number(audienceToEdit.configId) : undefined,
+                            clientId: Number(clientId) // Add clientId if required
+                        } : undefined}
                         isOpen={isAddModalOpen}
-                        onClose={(refreshData) => {
+                        onClose={(refreshData: boolean) => {
                             setIsAddModalOpen(false);
                             setAudienceToEdit(null);
                             if (refreshData) {
@@ -685,7 +756,22 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                         client={client}
                         onClose={() => setSelectedAudience(null)}
                         onEdit={handleEdit}
-                        onPhoneNumberClick={setSelectedPhoneNumber}
+                        onPhoneNumberClick={(phone: PhoneNumber) => {
+                            // Handle phone number click from details modal
+                            if (selectedAudience) {
+                                const configId = getConfigIdByName(selectedAudience.configName);
+                                if (configId) {
+                                    setSelectedPhoneNumber({
+                                        audienceId: selectedAudience.id,
+                                        phoneNumber: phone.phoneNumber,
+                                        message: phone.message,
+                                        configId: configId
+                                    });
+                                } else {
+                                    toast.error("Could not find SMS configuration");
+                                }
+                            }
+                        }}
                     />
                 )}
             </AnimatePresence>
@@ -696,6 +782,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                     <PhoneNumberModal
                         isOpen={!!selectedPhoneNumber}
                         clientId={clientId}
+                        configId={selectedPhoneNumber.configId}
                         audienceId={selectedPhoneNumber.audienceId}
                         phoneNumber={selectedPhoneNumber.phoneNumber}
                         message={selectedPhoneNumber.message}
@@ -704,8 +791,6 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                     />
                 )}
             </AnimatePresence>
-
-
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>
@@ -785,6 +870,3 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
 };
 
 export default AudienceList;
-
-
- 
