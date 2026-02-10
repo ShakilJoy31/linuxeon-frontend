@@ -2,6 +2,7 @@
 import { SMS, SMSResponse, SMSStats } from "@/utils/interface/smsConfiguration";
 import { apiSlice } from "../apiSlice";
 import { SMSSendResponse } from "@/utils/interface/sendSmsInterface";
+import { SMSHistoryFilters, SMSHistoryResponse } from "@/utils/interface/smsHistoryInterface";
 
 export const smsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -130,7 +131,25 @@ export const smsApi = apiSlice.injectEndpoints({
 
 
 
+ //! SMS History API (Admin)
+    getSMSHistory: builder.query<SMSHistoryResponse, SMSHistoryFilters>({
+      query: (filters) => {
+        const queryParams = new URLSearchParams();
+        
+        // Add all filters to query params
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== '') {
+            queryParams.append(key, value.toString());
+          }
+        });
 
+        return {
+          url: `/sms/history?${queryParams.toString()}`,
+          method: 'GET',
+        };
+      },
+      providesTags: ['SMSHistory'],
+    }),
 
 
 
@@ -151,4 +170,5 @@ export const {
   useTestSMSMutation,
   useToggleSMSStatusMutation,
   useSendSMSMutation,
+  useGetSMSHistoryQuery
 } = smsApi;

@@ -20,7 +20,11 @@ import {
     MoreVertical,
     Smartphone,
     CheckCircle,
-    ArrowRight
+    ArrowRight,
+    Loader,
+    AlertCircle,
+    XCircle,
+    ClipboardCheck
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useTheme } from '@/hooks/useThemeContext';
@@ -28,6 +32,7 @@ import { useDeleteAudienceMutation, useGetClientAudiencesQuery } from '@/redux/a
 import AddEditAudienceModal from './AddEditAudienceModal';
 import PhoneNumberModal from './PhoneNumberModal';
 import AudienceDetailsModal from './AudienceDetailsModal';
+import { useSendSMSMutation } from '@/redux/api/sms-configurations/smsApi';
 
 interface AudienceListProps {
     clientId: string | number;
@@ -83,6 +88,26 @@ interface AudienceApiResponse {
     pagination: PaginationData;
 }
 
+interface SMSSendResponse {
+    success: boolean;
+    message: string;
+    data: {
+        total: number;
+        successful: number;
+        failed: number;
+        results: Array<{
+            phoneNumber: string;
+            success: boolean;
+            messageUsed: string;
+            response: string;
+        }>;
+        errors: Array<{
+            phoneNumber: string;
+            error: string;
+        }>;
+    };
+}
+
 const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
     const { theme } = useTheme();
     const [filters, setFilters] = useState({
@@ -95,6 +120,9 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
 
     const [selectedAudience, setSelectedAudience] = useState<Audience | null>(null);
     const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<PhoneNumberModalData | null>(null);
+    const [audienceToSendSMS, setAudienceToSendSMS] = useState<Audience | null>(null);
+    const [sendResults, setSendResults] = useState<SMSSendResponse | null>(null);
+    const [isSending, setIsSending] = useState(false);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [audienceToEdit, setAudienceToEdit] = useState<Audience | null>(null);
@@ -114,6 +142,7 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
     }) as { data: AudienceApiResponse | undefined; isLoading: boolean; isError: boolean; refetch: () => void; };
 
     const [deleteAudience] = useDeleteAudienceMutation();
+    const [sendSMS] = useSendSMSMutation();
 
     const audiences = audienceData?.data || [];
     const smsConfigs = audienceData?.smsConfigs || [];
@@ -187,6 +216,119 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
             message: phone.message,
             configId: configId
         });
+    };
+
+    // Function to handle Send SMS button click
+    const handleSendSMSClick = (audience: Audience) => {
+        // Try to get configId from audience object first
+        let configId = audience.configId;
+
+        // If configId is not in audience, try to find it from configName
+        if (!configId) {
+            configId = getConfigIdByName(audience.configName);
+        }
+
+        if (!configId) {
+            toast.error("Could not find SMS configuration");
+            return;
+        }
+
+        // Update the audience with configId
+        const audienceWithConfig = {
+            ...audience,
+            configId: configId
+        };
+
+        setAudienceToSendSMS(audienceWithConfig);
+    };
+
+    // Function to send SMS to all numbers in audience
+    const handleSendSMSToAudience = async () => {
+        if (!audienceToSendSMS) return;
+
+        if (!audienceToSendSMS.phoneNumbers || audienceToSendSMS.phoneNumbers.length === 0) {
+            toast.error('No phone numbers to send messages to');
+            return;
+        }
+
+        if (!audienceToSendSMS.configId) {
+            toast.error('SMS configuration not found');
+            return;
+        }
+
+        setIsSending(true);
+        setSendResults(null);
+
+        try {
+            // Prepare payload
+            const payload: {
+                clientId: string | number;
+                configId: string | number;
+                phoneNumbers: string[];
+                messages?: string[];
+            } = {
+                clientId: client.id,
+                configId: audienceToSendSMS.configId,
+                phoneNumbers: audienceToSendSMS.phoneNumbers.map(p => p.phoneNumber)
+            };
+
+            // Use individual messages from each phone number
+            payload.messages = audienceToSendSMS.phoneNumbers.map(p => p.message);
+
+            const result = await sendSMS(payload).unwrap() as SMSSendResponse;
+            setSendResults(result);
+
+            if (result.success) {
+                toast.success(`SMS sent successfully to ${result.data.successful} recipients`);
+                
+                if (result.data.failed === 0) {
+                    setAudienceToSendSMS(null);
+                }
+            } else {
+                toast.error(result.message || 'Failed to send SMS');
+            }
+        } catch (error) {
+            console.error('Send SMS error:', error);
+            toast.error(error?.data?.message || 'Failed to send SMS. Please try again.');
+            setSendResults({
+                success: false,
+                message: error?.data?.message || 'Failed to send SMS',
+                data: {
+                    total: audienceToSendSMS.phoneNumbers.length,
+                    successful: 0,
+                    failed: audienceToSendSMS.phoneNumbers.length,
+                    results: [],
+                    errors: audienceToSendSMS.phoneNumbers.map(phone => ({
+                        phoneNumber: phone.phoneNumber,
+                        error: error?.data?.message || 'Failed to send SMS'
+                    }))
+                }
+            } as SMSSendResponse);
+        } finally {
+            setIsSending(false);
+        }
+    };
+
+    const copyResultsToClipboard = () => {
+        if (!sendResults) return;
+
+        const text = `
+SMS Send Results:
+Total: ${sendResults.data.total}
+Successful: ${sendResults.data.successful}
+Failed: ${sendResults.data.failed}
+
+${sendResults.data.results.map(r =>
+            `${r.phoneNumber}: ${r.success ? '✓ Success' : '✗ Failed'} (${r.messageUsed} message)`
+        ).join('\n')}
+
+${sendResults.data.errors?.length ? '\nErrors:\n' + sendResults.data.errors.map(e =>
+            `${e.phoneNumber}: ${e.error}`
+        ).join('\n') : ''}
+        `.trim();
+
+        navigator.clipboard.writeText(text);
+        toast.success('Results copied to clipboard');
     };
 
     const formatDate = (dateString: string) => {
@@ -596,9 +738,24 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
 
                                             <div className="flex items-center gap-1">
                                                 {[
-                                                    { icon: Send, action: () => { }, title: 'Send SMS', color: 'text-purple-500' },
-                                                    { icon: Edit, action: () => handleEdit(audience), title: 'Edit', color: 'text-green-500' },
-                                                    { icon: Trash2, action: () => handleDeleteClick(audience), title: 'Delete', color: 'text-red-500' },
+                                                    { 
+                                                        icon: Send, 
+                                                        action: () => handleSendSMSClick(audience), 
+                                                        title: 'Send SMS', 
+                                                        color: 'text-purple-500' 
+                                                    },
+                                                    { 
+                                                        icon: Edit, 
+                                                        action: () => handleEdit(audience), 
+                                                        title: 'Edit', 
+                                                        color: 'text-green-500' 
+                                                    },
+                                                    { 
+                                                        icon: Trash2, 
+                                                        action: () => handleDeleteClick(audience), 
+                                                        title: 'Delete', 
+                                                        color: 'text-red-500' 
+                                                    },
                                                 ].map((btn, idx) => (
                                                     <motion.button
                                                         key={idx}
@@ -773,6 +930,212 @@ const AudienceList: React.FC<AudienceListProps> = ({ clientId, client }) => {
                             }
                         }}
                     />
+                )}
+            </AnimatePresence>
+
+            {/* Send SMS Confirmation Modal */}
+            <AnimatePresence>
+                {audienceToSendSMS && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className={`rounded-2xl p-8 w-full max-w-2xl shadow-2xl ${theme === 'dark'
+                                ? 'bg-linear-to-br from-gray-800 to-gray-900 border-gray-700'
+                                : 'bg-linear-to-br from-white to-gray-50 border-gray-200'
+                                } border`}
+                        >
+                            <div className="mb-6">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Send className="w-6 h-6 text-purple-500" />
+                                    <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+                                        }`}>
+                                        Send SMS to Audience
+                                    </h3>
+                                </div>
+                                <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                                    }`}>
+                                    You are about to send SMS messages to all phone numbers in the audience.
+                                </p>
+                            </div>
+
+                            {/* Audience Information */}
+                            <div className={`mb-6 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                                            }`}>Audience Name</p>
+                                        <p className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+                                            }`}>{audienceToSendSMS.configName}</p>
+                                    </div>
+                                    <div>
+                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                                            }`}>Total Recipients</p>
+                                        <p className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+                                            }`}>{audienceToSendSMS.totalNumbers} phone numbers</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Message Preview */}
+                            {audienceToSendSMS.phoneNumbers.length > 0 && (
+                                <div className="mb-6">
+                                    <h4 className={`font-medium mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                                        }`}>
+                                        Message Preview (For double check)
+                                    </h4>
+                                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                                        {audienceToSendSMS.phoneNumbers.map((phone, index) => (
+                                            <div
+                                                key={index}
+                                                className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}
+                                            >
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <Phone size={14} className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} />
+                                                    <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                                        {phone.phoneNumber}
+                                                    </span>
+                                                </div>
+                                                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                    {phone.message.length > 100 ? phone.message.substring(0, 100) + '...' : phone.message}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Results Display (if available) */}
+                            {sendResults && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={`mb-6 p-4 rounded-lg border ${theme === 'dark' ? 'bg-gray-900/50 border-gray-700' : 'bg-gray-50 border-gray-200'
+                                        }`}
+                                >
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                        <h4 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+                                            }`}>
+                                            Send Results
+                                        </h4>
+                                        <button
+                                            onClick={copyResultsToClipboard}
+                                            className={`flex items-center hover:cursor-pointer gap-2 px-4 py-2 rounded-lg transition-colors ${theme === 'dark'
+                                                ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                                                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'
+                                                } self-start sm:self-auto`}
+                                        >
+                                            <ClipboardCheck className="w-4 h-4" />
+                                            Copy Results
+                                        </button>
+                                    </div>
+
+                                    {/* Summary */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                                        <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                                            <div className="text-xl font-bold mb-1 text-gray-900 dark:text-white">
+                                                {sendResults.data.total}
+                                            </div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">Total Sent</div>
+                                        </div>
+                                        <div className={`p-3 rounded-lg ${sendResults.data.successful > 0
+                                            ? 'bg-green-500/10 dark:bg-green-500/20'
+                                            : 'bg-gray-100 dark:bg-gray-800'
+                                            }`}>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                                <div className="text-xl font-bold text-gray-900 dark:text-white">
+                                                    {sendResults.data.successful}
+                                                </div>
+                                            </div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">Successful</div>
+                                        </div>
+                                        <div className={`p-3 rounded-lg ${sendResults.data.failed > 0
+                                            ? 'bg-red-500/10 dark:bg-red-500/20'
+                                            : 'bg-gray-100 dark:bg-gray-800'
+                                            }`}>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <XCircle className="w-4 h-4 text-red-500" />
+                                                <div className="text-xl font-bold text-gray-900 dark:text-white">
+                                                    {sendResults.data.failed}
+                                                </div>
+                                            </div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">Failed</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Summary Message */}
+                                    <div className={`p-3 rounded-lg ${sendResults.success
+                                        ? 'bg-green-50 dark:bg-green-500/10'
+                                        : 'bg-yellow-50 dark:bg-yellow-500/10'
+                                        }`}>
+                                        <div className="flex items-start gap-2">
+                                            {sendResults.success ? (
+                                                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                            ) : (
+                                                <AlertCircle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                                            )}
+                                            <p className={`text-sm ${sendResults.success
+                                                ? 'text-green-700 dark:text-green-400'
+                                                : 'text-yellow-700 dark:text-yellow-400'
+                                                }`}>
+                                                {sendResults.message}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-4">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                        setAudienceToSendSMS(null);
+                                        setSendResults(null);
+                                    }}
+                                    className={`flex-1 hover:cursor-pointer py-3 px-4 rounded-xl transition-all duration-300 border ${theme === 'dark'
+                                        ? 'bg-gray-800/50 text-gray-300 hover:bg-gray-700 border-gray-700'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200'
+                                        }`}
+                                >
+                                    {sendResults ? 'Close' : 'Cancel'}
+                                </motion.button>
+                                {!sendResults && (
+                                    <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={handleSendSMSToAudience}
+                                        disabled={isSending}
+                                        className={`flex-1 hover:cursor-pointer py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${theme === 'dark'
+                                            ? 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 disabled:opacity-50'
+                                            : 'bg-purple-500 text-white hover:bg-purple-600 disabled:opacity-50'
+                                            }`}
+                                    >
+                                        {isSending ? (
+                                            <>
+                                                <Loader className="w-4 h-4 animate-spin" />
+                                                Sending...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Send size={16} />
+                                                Send SMS to All
+                                            </>
+                                        )}
+                                    </motion.button>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 

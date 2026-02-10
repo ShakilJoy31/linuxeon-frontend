@@ -660,7 +660,7 @@ const AddEditAudienceModal: React.FC<AddEditAudienceModalProps> = ({
                                                             setNewMessage(configMessage);
                                                             setUseConfigMessage(true);
                                                         }}
-                                                        className={`text-xs px-2 py-1 rounded flex items-center gap-1 transition-colors duration-300 ${theme === 'dark'
+                                                        className={`text-xs hover:cursor-pointer px-2 py-1 rounded flex items-center gap-1 transition-colors duration-300 ${theme === 'dark'
                                                             ? useConfigMessage
                                                                 ? 'bg-blue-500/30 text-blue-400 border border-blue-500/50'
                                                                 : 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/20'

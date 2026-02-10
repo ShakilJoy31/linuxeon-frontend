@@ -457,7 +457,7 @@ ${sendResults.data.errors?.length ? '\nErrors:\n' + sendResults.data.errors.map(
                                 Default Message
                             </h4>
 
-                             <button
+                            <button
                                 onClick={() => {
                                     navigator.clipboard.writeText(selectedConfig.message);
                                     toast.success('Message copied to clipboard');
@@ -490,7 +490,7 @@ ${sendResults.data.errors?.length ? '\nErrors:\n' + sendResults.data.errors.map(
                             <p className="text-gray-700 dark:text-gray-300 break-words flex-1">
                                 {selectedConfig.message}
                             </p>
-                           
+
                         </div>
                     </div>
                 </div>
@@ -554,14 +554,12 @@ ${sendResults.data.errors?.length ? '\nErrors:\n' + sendResults.data.errors.map(
 
             {/* Send Button */}
             <div className="mb-6 md:mb-8">
-                <button
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={handleSendSMS}
                     disabled={!selectedConfig || !phoneNumbers.trim() || isSending || isSendingMutation}
-                    className={`w-full py-3 md:py-4 hover:cursor-pointer px-4 md:px-6 rounded-lg font-medium text-base md:text-lg transition-all flex items-center justify-center gap-3
-            ${!selectedConfig || !phoneNumbers.trim() || isSending || isSendingMutation
-                            ? 'bg-gray-300 cursor-not-allowed text-gray-500 dark:bg-gray-700 dark:text-gray-400'
-                            : 'bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700'
-                        }`}
+                    className={`px-2 w-full justify-center hover:cursor-pointer py-4 text-sm border rounded transition-colors duration-300 dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500/30 dark:border-blue-500/30 bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-1`}
                 >
                     {isSending || isSendingMutation ? (
                         <>
@@ -574,7 +572,8 @@ ${sendResults.data.errors?.length ? '\nErrors:\n' + sendResults.data.errors.map(
                             Send SMS
                         </>
                     )}
-                </button>
+                </motion.button>
+
 
                 <div className="mt-3 text-sm text-center text-gray-600 dark:text-gray-400">
                     {selectedConfig && phoneNumbers.trim() && (
@@ -731,5 +730,6 @@ ${sendResults.data.errors?.length ? '\nErrors:\n' + sendResults.data.errors.map(
 };
 
 export default SMSComponent;
+
 
 
