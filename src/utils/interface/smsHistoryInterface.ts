@@ -1,4 +1,19 @@
 // utils/interface/smsHistoryInterface.ts
+export interface ClientDetails {
+  id: number;
+  fullName: string;
+  mobileNo: string;
+  email: string;
+}
+
+export interface ConfigDetails {
+  id: number;
+  appName: string;
+  senderId: string;
+  type: string;
+  clientId: number;
+}
+
 export interface SMSHistory {
   id: number;
   clientId: number;
@@ -10,13 +25,15 @@ export interface SMSHistory {
   gatewayResponse: string | null;
   status: 'sent' | 'failed' | 'delivered' | 'pending';
   deliveryStatus: 'pending' | 'delivered' | 'failed' | 'unknown';
-  sentAt: string;
   deliveryConfirmedAt: string | null;
+  sentAt: string;
   cost: string;
   characterCount: number;
   smsCount: number;
   createdAt: string;
   updatedAt: string;
+  clientDetails?: ClientDetails | null;
+  configDetails?: ConfigDetails | null;
 }
 
 export interface SMSHistoryResponse {
@@ -49,4 +66,13 @@ export interface SMSHistoryFilters {
   search?: string;
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
+}
+
+export interface Client {
+  id: number;
+  fullName: string;
+  mobileNo: string;
+  email: string;
+  status: string;
+  role: string;
 }

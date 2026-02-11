@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Edit, MessageSquare, Key, Calendar, CheckCircle, XCircle, Eye, EyeOff, Hash, Send, Copy, FileText, Tag, ToggleLeft, ToggleRight } from "lucide-react";
+import { X, Edit, MessageSquare, Key, Calendar, CheckCircle, XCircle, Eye, EyeOff, Hash, Copy, FileText, Tag, ToggleLeft, ToggleRight } from "lucide-react";
 import { SMS } from "@/utils/interface/smsConfiguration";
 import { useTheme } from "@/hooks/useThemeContext";
 
@@ -27,7 +27,6 @@ const SMSDetailsModal: React.FC<SMSDetailsModalProps> = ({
     client,
     onClose,
     onEdit,
-    onTestSMS,
     onToggleStatus,
 }) => {
     const { theme } = useTheme();
@@ -126,11 +125,6 @@ const SMSDetailsModal: React.FC<SMSDetailsModalProps> = ({
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const handleTestSMS = () => {
-        onTestSMS(sms);
-        onClose();
-    };
-
     const generateExampleUrl = () => {
         return `${sms.baseUrl}?api_key=${sms.apiKey}&type=${sms.type}&contacts=${client.mobileNo}&senderid=${sms.senderId}&msg=${encodeURIComponent(sms.message)}`;
     };
@@ -185,7 +179,7 @@ const SMSDetailsModal: React.FC<SMSDetailsModalProps> = ({
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={onClose}
-                                className={`p-2 rounded-full transition-colors duration-300 ${
+                                className={`p-2 hover:cursor-pointer rounded-full transition-colors duration-300 ${
                                     theme === 'dark' 
                                     ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
                                     : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
@@ -378,21 +372,6 @@ const SMSDetailsModal: React.FC<SMSDetailsModalProps> = ({
                                     }`}>
                                         {generateExampleUrl()}
                                     </code>
-                                    <div className="flex justify-end mt-3">
-                                        <motion.button
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                            onClick={handleTestSMS}
-                                            className={`px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2 ${
-                                                theme === 'dark'
-                                                ? 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30'
-                                                : 'bg-purple-500 text-white hover:bg-purple-600'
-                                            }`}
-                                        >
-                                            <Send size={16} />
-                                            Test SMS
-                                        </motion.button>
-                                    </div>
                                 </div>
                             </div>
 
@@ -463,7 +442,7 @@ const SMSDetailsModal: React.FC<SMSDetailsModalProps> = ({
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={onClose}
-                                    className={`px-6 py-2 rounded-lg transition-colors duration-300 ${
+                                    className={`px-6 hover:cursor-pointer py-2 rounded-lg transition-colors duration-300 ${
                                         theme === 'dark'
                                         ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -478,7 +457,7 @@ const SMSDetailsModal: React.FC<SMSDetailsModalProps> = ({
                                         onClose();
                                         onEdit(sms);
                                     }}
-                                    className={`px-6 py-2 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
+                                    className={`px-6 hover:cursor-pointer py-2 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${
                                         theme === 'dark'
                                         ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30'
                                         : 'bg-blue-500 text-white hover:bg-blue-600'
