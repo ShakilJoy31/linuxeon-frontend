@@ -1,18 +1,17 @@
 // next.config.js
 const nextConfig = {
   images: {
-    domains: [
-      'www.image.com',
-      'flagcdn.com', // Changed from www.flagcdn.com
-      'www.flagcdn.com', // Can keep both if needed
-      'res.cloudinary.com',
-       'assets.gadgetandgear.com',
-      'adminapi.applegadgetsbd.com',
-      'www.static-src.com',
-      'i.ibb.co.com',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // This allows ALL HTTPS domains
+      },
+      {
+        protocol: 'http',
+        hostname: '**', // This allows ALL HTTP domains
+      },
     ],
   },
-  // ... other config options
   staticPageGenerationTimeout: 300
 }
 

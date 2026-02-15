@@ -1,5 +1,5 @@
+// redux/api/authentication/authApi.ts
 import { apiSlice } from "../apiSlice";
-
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,11 +13,38 @@ export const authApi = apiSlice.injectEndpoints({
     }),
 
     registerClient: builder.mutation({
-      query: (clientData: { email: string, password: string }) => ({
+      query: (clientData: {
+        fullName: string;
+        photo?: string;
+        dateOfBirth: string;
+        age: number;
+        sex: string;
+        nidOrPassportNo: string;
+        nidPhotoFrontSide?: string;
+        nidPhotoBackSide?: string;
+        mobileNo: string;
+        email: string;
+        password: string;
+        status: string;
+        role: string;
+      }) => ({
         url: "/authentication/register-new-client",
         method: "POST",
         body: clientData,
       }),
+      invalidatesTags: ["Client"],
+    }),
+
+    updateClient: builder.mutation({
+      query: ({ id, ...data }: { id: number;[key: string]: unknown }) => ({
+        url: `/authentication/update-client/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Client', id },
+        { type: 'Client', id: 'LIST' },
+      ],
     }),
 
     getAllClients: builder.query({
@@ -61,26 +88,28 @@ export const authApi = apiSlice.injectEndpoints({
         url: `/authentication/get-client-according-to-id/${id}`,
         method: "GET",
       }),
+      providesTags: (result, error, id) => [{ type: 'Client', id }],
     }),
 
-
-
-    // Add these to your existing authApi endpoints
     deleteClient: builder.mutation({
       query: (id: number) => ({
         url: `/authentication/delete-client/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: [{ type: 'Client', id: 'LIST' }],
     }),
 
     updateClientStatus: builder.mutation({
       query: ({ id, status }: { id: number; status: 'active' | 'pending' | 'inactive' }) => ({
-        url: `/authentication/update-client-status/${id}`,
+        url: `/authentication/update-client/${id}`,
         method: 'PUT',
         body: { status },
       }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Client', id },
+        { type: 'Client', id: 'LIST' },
+      ],
     }),
-
 
     changePassword: builder.mutation({
       query: ({ id, currentPassword, newPassword, confirmNewPassword }: {
@@ -95,6 +124,18 @@ export const authApi = apiSlice.injectEndpoints({
       }),
     }),
 
+
+
+    //! User payment api______________________________
+    // In your authApi.ts
+    processPayment: builder.mutation({
+      query: (data) => ({
+        url: '/payment/process-payment',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
     refreshToken: builder.mutation({
       query: (refreshToken: string) => ({
         url: "/authentication/refresh",
@@ -103,16 +144,22 @@ export const authApi = apiSlice.injectEndpoints({
       }),
     }),
 
+
+
+
+
   }),
 });
 
 export const {
   useLoginMutation,
   useRegisterClientMutation,
+  useUpdateClientMutation,
   useGetAllClientsQuery,
   useGetClientByIdQuery,
   useRefreshTokenMutation,
   useDeleteClientMutation,
   useUpdateClientStatusMutation,
-  useChangePasswordMutation
+  useChangePasswordMutation,
+  useProcessPaymentMutation
 } = authApi;

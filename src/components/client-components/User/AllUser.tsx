@@ -29,7 +29,7 @@ import {
     Key,
     Crown
 } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { useDeleteClientMutation, useGetAllClientsQuery, useUpdateClientStatusMutation } from '@/redux/api/authentication/authApi';
 import { useTheme } from '@/hooks/useThemeContext';
 import ClientCard, { Client } from './ClientCard';
@@ -120,7 +120,7 @@ export default function ClientsContent() {
         try {
             await deleteClient(clientToDelete.id).unwrap();
             toast.success(`${clientToDelete.fullName} deleted successfully`);
-            refetch()
+            await refetch()
             setShowDeleteModal(false);
             setClientToDelete(null);
         } catch (err) {
@@ -133,7 +133,7 @@ export default function ClientsContent() {
         try {
             await updateClientStatus({ id: client.id, status }).unwrap();
             toast.success(`Client status updated to ${status}`);
-            refetch();
+            await refetch();
         } catch (err) {
             console.error('Error updating status:', err);
             toast.error(err?.data?.message || 'Failed to update status');
@@ -262,14 +262,6 @@ export default function ClientsContent() {
             ? 'bg-gradient-to-br from-gray-900 via-black to-gray-900'
             : 'bg-gradient-to-br from-gray-50 via-white to-gray-100'
             } p-6`}>
-            <Toaster
-                position="top-right"
-                toastOptions={{
-                    className: theme === 'dark'
-                        ? 'bg-gray-800 text-white border border-gray-700'
-                        : 'bg-white text-gray-900 border border-gray-200',
-                }}
-            />
 
             {/* Header */}
             <div className="mb-8">

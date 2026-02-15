@@ -30,7 +30,6 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({
-  onSwitchToSignup,
   onForgotPassword
 }: LoginFormProps) {
   const router = useRouter();
@@ -518,8 +517,8 @@ export default function LoginForm({
             )}>
               Don&apos;t have an account?{' '}
               <button
-                onClick={onSwitchToSignup}
-                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                onClick={()=> router.push('/register')}
+                className="font-medium text-blue-600 hover:cursor-pointer hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
               >
                 Sign up
               </button>
