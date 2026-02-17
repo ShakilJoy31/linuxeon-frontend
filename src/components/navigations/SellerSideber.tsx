@@ -141,8 +141,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
           {
             key: "sms-templates",
             icon: <CgTemplate size={16} />,
-            label: "Templates",
-            href: "/admin/sms/templates",
+            label: "SMS Balance",
+            href: "/admin/sms/sms-balance",
           },
           {
             key: "sms-inbox",

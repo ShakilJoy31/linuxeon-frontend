@@ -8,7 +8,6 @@ import * as z from 'zod';
 import { Eye, EyeOff, Lock, Mail, LogIn, Loader2, AlertCircle, Shield, Smartphone } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { appConfiguration } from '@/utils/constant/appConfiguration'; // Import your configuration
 import { shareWithCookies } from '@/utils/helper/shareWithCookies';
@@ -37,7 +36,6 @@ export default function LoginForm({
   const [showPassword, setShowPassword] = useState(false);
   const [animateBg, setAnimateBg] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Handle theme mounting
@@ -128,20 +126,6 @@ export default function LoginForm({
       setErrorMessage(errorMessage);
       toast.error(errorMessage);
     }
-  };
-
-
-
-
-  const handleSocialLogin = (provider: 'google' | 'github' | 'linkedin') => {
-    toast.promise(
-      new Promise(resolve => setTimeout(resolve, 1000)),
-      {
-        loading: `Connecting with ${provider}...`,
-        success: `Redirecting to ${provider} authentication`,
-        error: `Failed to connect with ${provider}`,
-      }
-    );
   };
 
   // Don't render theme-dependent UI until mounted
@@ -444,64 +428,6 @@ export default function LoginForm({
                 </motion.button>
               </div>
             </form>
-
-            {/* Social Login */}
-            <div className="mt-8">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className={cn(
-                    "w-full border-t",
-                    "border-gray-300",
-                    "dark:border-gray-800"
-                  )} />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className={cn(
-                    "px-2",
-                    "bg-white text-gray-500",
-                    "dark:bg-gray-900 dark:text-gray-400"
-                  )}>
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6 grid grid-cols-3 gap-3">
-                {[
-                  {
-                    provider: 'google',
-                    lightColor: 'bg-linear-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600',
-                    darkColor: 'bg-linear-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700',
-                    icon: 'G'
-                  },
-                  {
-                    provider: 'github',
-                    lightColor: 'bg-linear-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600',
-                    darkColor: 'bg-linear-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500',
-                    icon: 'GH'
-                  },
-                  {
-                    provider: 'linkedin',
-                    lightColor: 'bg-linear-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500',
-                    darkColor: 'bg-linear-to-r from-blue-800 to-blue-700 hover:from-blue-700 hover:to-blue-600',
-                    icon: 'LN'
-                  },
-                ].map((social) => (
-                  <motion.button
-                    key={social.provider}
-                    onClick={() => handleSocialLogin(social.provider as 'google' | 'github' | 'linkedin')}
-                    whileHover={{ y: -2 }}
-                    whileTap={{ y: 0 }}
-                    className={cn(
-                      "w-full text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center",
-                      theme === 'light' ? social.lightColor : social.darkColor
-                    )}
-                  >
-                    {social.icon}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Footer */}

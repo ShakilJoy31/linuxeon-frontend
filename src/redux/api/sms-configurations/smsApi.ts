@@ -1,8 +1,62 @@
-
 import { SMS, SMSResponse, SMSStats } from "@/utils/interface/smsConfiguration";
 import { apiSlice } from "../apiSlice";
 import { SMSSendResponse } from "@/utils/interface/sendSmsInterface";
 import { SMSHistoryFilters, SMSHistoryResponse } from "@/utils/interface/smsHistoryInterface";
+
+// Add Payment Interfaces
+export interface PaymentTransaction {
+  id: number;
+  transactionId: string;
+  amount: string;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
+  paymentMethod: string;
+  cardType: string | null;
+  cardIssuer: string | null;
+  cardBrand: string | null;
+  bankTransactionId: string | null;
+  valId: string | null;
+  riskLevel: string | null;
+  errorMessage: string | null;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface UserPaymentsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    userId: number;
+    totalTransactions: number;
+    transactions: PaymentTransaction[];
+  };
+}
+
+export interface PaymentStatusResponse {
+  success: boolean;
+  message: string;
+  data: {
+    transaction: PaymentTransaction;
+    user: unknown | null;
+    userData: unknown | null;
+  };
+}
+
+export interface ProcessPaymentRequest {
+  userId: number | string;
+  amount: number;
+  paymentMethod: string;
+  payload: unknown;
+}
+
+export interface ProcessPaymentResponse {
+  success: boolean;
+  message: string;
+  data: {
+    gatewayUrl: string;
+    transactionId: string;
+  };
+}
 
 export const smsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -90,21 +144,12 @@ export const smsApi = apiSlice.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [{ type: 'SMS', id }, 'SMS'],
     }),
 
-
-
-
-
-
-
-
-
-
     //! SMS sending api
     sendSMS: builder.mutation<SMSSendResponse, {
       clientId: string | number;
       configId: string | number;
       phoneNumbers: string[];
-      messages?: string[]; // Optional custom messages array
+      messages?: string[];
     }>({
       query: ({ clientId, configId, phoneNumbers, messages }) => ({
         url: `/sms/${clientId}/send`,
@@ -112,31 +157,17 @@ export const smsApi = apiSlice.injectEndpoints({
         body: {
           configId,
           phoneNumbers,
-          ...(messages && { messages }) // Include messages only if provided
+          ...(messages && { messages })
         },
       }),
       invalidatesTags: ['SMS'],
     }),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
- //! SMS History API (Admin)
+    //! SMS History API (Admin)
     getSMSHistory: builder.query<SMSHistoryResponse, SMSHistoryFilters>({
       query: (filters) => {
         const queryParams = new URLSearchParams();
         
-        // Add all filters to query params
         Object.entries(filters).forEach(([key, value]) => {
           if (value !== undefined && value !== '') {
             queryParams.append(key, value.toString());
@@ -151,12 +182,35 @@ export const smsApi = apiSlice.injectEndpoints({
       providesTags: ['SMSHistory'],
     }),
 
+    //! ========== PAYMENT ENDPOINTS ==========
 
+    // Get user payments by user ID
+    getUserPayments: builder.query<UserPaymentsResponse, string | number>({
+      query: (userId) => ({
+        url: `/payment/user/${userId}`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, userId) => [{ type: 'Payments', id: userId }],
+    }),
 
+    // Get specific payment status by transaction ID
+    getPaymentStatus: builder.query<PaymentStatusResponse, string>({
+      query: (transactionId) => ({
+        url: `/payment/status/${transactionId}`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, transactionId) => [{ type: 'Payment', id: transactionId }],
+    }),
 
-
-
-
+    // Process new payment
+    processPayment: builder.mutation<ProcessPaymentResponse, ProcessPaymentRequest>({
+      query: (paymentData) => ({
+        url: `/payment/process`,
+        method: 'POST',
+        body: paymentData,
+      }),
+      invalidatesTags: (result, error, { userId }) => [{ type: 'Payments', id: userId }],
+    }),
   }),
 });
 
@@ -170,5 +224,9 @@ export const {
   useTestSMSMutation,
   useToggleSMSStatusMutation,
   useSendSMSMutation,
-  useGetSMSHistoryQuery
+  useGetSMSHistoryQuery,
+  // Payment hooks
+  useGetUserPaymentsQuery,
+  useGetPaymentStatusQuery,
+  useProcessPaymentMutation,
 } = smsApi;

@@ -212,10 +212,10 @@ export default function PasswordChange() {
     };
 
     const getStrengthBgColor = (strength: number) => {
-        if (strength <= 40) return "bg-red-500/20";
-        if (strength <= 60) return "bg-yellow-500/20";
-        if (strength <= 80) return "bg-blue-500/20";
-        return "bg-emerald-500/20";
+        if (strength <= 40) return "bg-red-500/20 dark:bg-red-500/20";
+        if (strength <= 60) return "bg-yellow-500/20 dark:bg-yellow-500/20";
+        if (strength <= 80) return "bg-blue-500/20 dark:bg-blue-500/20";
+        return "bg-emerald-500/20 dark:bg-emerald-500/20";
     };
 
     const onSubmit = async (data: PasswordChangeFormData) => {
@@ -324,18 +324,18 @@ export default function PasswordChange() {
             className="w-full max-w-5xl mx-auto rounded-2xl overflow-hidden my-4"
         >
             {/* Animated Background */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black p-1">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse" />
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-black p-1">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 dark:from-blue-500/10 dark:via-purple-500/10 dark:to-pink-500/10 animate-pulse" />
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 dark:bg-blue-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 dark:opacity-20 animate-blob" />
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/20 dark:bg-purple-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 dark:opacity-20 animate-blob animation-delay-2000" />
 
-                <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-900/95 to-black/95 backdrop-blur-xl rounded-xl border border-gray-800/50 shadow-2xl">
+                <div className="relative bg-gradient-to-br from-white via-white/95 to-gray-50/95 dark:from-gray-900/90 dark:via-gray-900/95 dark:to-black/95 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-800/50 shadow-xl dark:shadow-2xl">
                     {/* Header with animated icon */}
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="p-8 border-b border-gray-800/50"
+                        className="p-8 border-b border-gray-200/50 dark:border-gray-800/50"
                     >
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                             <div className="flex items-center gap-4">
@@ -344,16 +344,16 @@ export default function PasswordChange() {
                                     transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
                                     className="relative"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur-lg opacity-50" />
-                                    <div className="relative p-3 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700">
-                                        <LockKeyhole className="w-8 h-8 text-blue-400" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur-lg opacity-50 dark:opacity-50" />
+                                    <div className="relative p-3 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border border-gray-300 dark:border-gray-700">
+                                        <LockKeyhole className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                                     </div>
                                 </motion.div>
                                 <div>
-                                    <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                    <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                                         Password Security
                                     </h2>
-                                    <p className="text-gray-400 mt-1">
+                                    <p className="text-gray-600 dark:text-gray-400 mt-1">
                                         Update your password with enhanced security features
                                     </p>
                                 </div>
@@ -374,23 +374,23 @@ export default function PasswordChange() {
                                     whileTap={{ scale: 0.95 }}
                                 >
                                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-sm" />
-                                    <div className="relative px-4 py-3 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 backdrop-blur-sm flex items-center gap-2">
+                                    <div className="relative px-4 py-3 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border border-gray-300/50 dark:border-gray-700/50 backdrop-blur-sm flex items-center gap-2">
                                         {isGeneratingPassword ? (
                                             <motion.div
                                                 animate={{ rotate: 360 }}
                                                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                                             >
-                                                <RefreshCw className="w-4 h-4 text-purple-400" />
+                                                <RefreshCw className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                                             </motion.div>
                                         ) : (
-                                            <Key className="w-4 h-4 text-purple-400" />
+                                            <Key className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                                         )}
-                                        <span className="text-sm font-medium text-gray-200">
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                                             {isGeneratingPassword ? "Generating..." : "Generate Strong Password"}
                                         </span>
                                     </div>
                                 </motion.button>
-                                <p className="text-xs text-gray-500 text-center max-w-xs">
+                                <p className="text-xs text-gray-500 dark:text-gray-500 text-center max-w-xs">
                                     Generates a secure 16-character password with all requirements
                                 </p>
                             </motion.div>
@@ -403,11 +403,11 @@ export default function PasswordChange() {
                             {/* Current Password Field */}
                             <motion.div variants={itemVariants} className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                                        <KeyRound className="w-4 h-4 text-blue-400" />
+                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <KeyRound className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                         Current Password
                                     </label>
-                                    <span className="text-xs text-gray-500">Required</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-500">Required</span>
                                 </div>
                                 <div className="relative group">
                                     <input
@@ -416,9 +416,9 @@ export default function PasswordChange() {
                                         placeholder="Enter your current password"
                                         className={cn(
                                             "w-full px-5 py-4 rounded-xl border-2",
-                                            "bg-gray-900/50 backdrop-blur-sm",
-                                            "border-gray-700/50 group-hover:border-blue-500/50",
-                                            "text-gray-100 placeholder-gray-500",
+                                            "bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm",
+                                            "border-gray-300/50 dark:border-gray-700/50 group-hover:border-blue-500/50 dark:group-hover:border-blue-500/50",
+                                            "text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500",
                                             "focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20",
                                             "transition-all duration-300",
                                             errors.currentPassword && "border-red-500/50 focus:border-red-500"
@@ -429,11 +429,11 @@ export default function PasswordChange() {
                                         whileTap={{ scale: 0.9 }}
                                         type="button"
                                         onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gray-100/50 dark:bg-gray-800/50 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
                                     >
                                         {showCurrentPassword ?
-                                            <EyeOff className="w-4 h-4 text-gray-400" /> :
-                                            <Eye className="w-4 h-4 text-gray-400" />
+                                            <EyeOff className="w-4 h-4 text-gray-600 dark:text-gray-400" /> :
+                                            <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                                         }
                                     </motion.button>
                                     {errors.currentPassword && (
@@ -442,8 +442,8 @@ export default function PasswordChange() {
                                             animate={{ opacity: 1, x: 0 }}
                                             className="absolute -bottom-6 left-0 flex items-center gap-1"
                                         >
-                                            <XCircle className="w-3 h-3 text-red-400" />
-                                            <span className="text-xs text-red-400">{errors.currentPassword.message}</span>
+                                            <XCircle className="w-3 h-3 text-red-500 dark:text-red-400" />
+                                            <span className="text-xs text-red-500 dark:text-red-400">{errors.currentPassword.message}</span>
                                         </motion.div>
                                     )}
                                 </div>
@@ -452,8 +452,8 @@ export default function PasswordChange() {
                             {/* New Password Field */}
                             <motion.div variants={itemVariants} className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                                        <Sparkles className="w-4 h-4 text-purple-400" />
+                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                                         New Password
                                     </label>
                                     <div className="flex items-center gap-2">
@@ -463,13 +463,13 @@ export default function PasswordChange() {
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 type="button"
                                                 onClick={copyToClipboard}
-                                                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
+                                                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-100/50 dark:bg-gray-800/50 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
                                             >
-                                                <Copy className="w-3 h-3 text-gray-400" />
-                                                <span className="text-xs text-gray-400">Copy</span>
+                                                <Copy className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                                                <span className="text-xs text-gray-600 dark:text-gray-400">Copy</span>
                                             </motion.button>
                                         )}
-                                        <span className="text-xs text-gray-500">Secure password required</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-500">Secure password required</span>
                                     </div>
                                 </div>
                                 <div className="relative group">
@@ -479,9 +479,9 @@ export default function PasswordChange() {
                                         placeholder="Create a strong new password"
                                         className={cn(
                                             "w-full px-5 py-4 rounded-xl border-2 pr-24",
-                                            "bg-gray-900/50 backdrop-blur-sm",
-                                            "border-gray-700/50 group-hover:border-purple-500/50",
-                                            "text-gray-100 placeholder-gray-500",
+                                            "bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm",
+                                            "border-gray-300/50 dark:border-gray-700/50 group-hover:border-purple-500/50 dark:group-hover:border-purple-500/50",
+                                            "text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500",
                                             "focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20",
                                             "transition-all duration-300",
                                             errors.newPassword && "border-red-500/50 focus:border-red-500"
@@ -490,17 +490,17 @@ export default function PasswordChange() {
                                             onChange: (e) => calculatePasswordStrength(e.target.value),
                                         })}
                                     />
-                                     <motion.button
-                                            whileTap={{ scale: 0.9 }}
-                                            type="button"
-                                            onClick={() => setShowNewPassword(!showNewPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
-                                        >
-                                            {showNewPassword ?
-                                                <EyeOff className="w-4 h-4 text-gray-400" /> :
-                                                <Eye className="w-4 h-4 text-gray-400" />
-                                            }
-                                        </motion.button>
+                                    <motion.button
+                                        whileTap={{ scale: 0.9 }}
+                                        type="button"
+                                        onClick={() => setShowNewPassword(!showNewPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gray-100/50 dark:bg-gray-800/50 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
+                                    >
+                                        {showNewPassword ?
+                                            <EyeOff className="w-4 h-4 text-gray-600 dark:text-gray-400" /> :
+                                            <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                        }
+                                    </motion.button>
                                 </div>
 
                                 {/* Password Strength Indicator */}
@@ -512,14 +512,14 @@ export default function PasswordChange() {
                                     >
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-400">Security Level</span>
+                                                <span className="text-sm text-gray-600 dark:text-gray-400">Security Level</span>
                                                 <motion.span
                                                     key={securityLevel}
                                                     initial={{ scale: 0.8, opacity: 0 }}
                                                     animate={{ scale: 1, opacity: 1 }}
-                                                    className={`text-sm font-semibold ${securityLevel === "Weak" ? "text-red-400" :
-                                                            securityLevel === "Fair" ? "text-yellow-400" :
-                                                                securityLevel === "Good" ? "text-blue-400" : "text-emerald-400"
+                                                    className={`text-sm font-semibold ${securityLevel === "Weak" ? "text-red-600 dark:text-red-400" :
+                                                            securityLevel === "Fair" ? "text-yellow-600 dark:text-yellow-400" :
+                                                                securityLevel === "Good" ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"
                                                         }`}
                                                 >
                                                     {securityLevel}
@@ -527,7 +527,7 @@ export default function PasswordChange() {
                                             </div>
                                             <motion.div
                                                 animate={controls}
-                                                className="relative h-3 bg-gray-800/50 rounded-full overflow-hidden"
+                                                className="relative h-3 bg-gray-200/50 dark:bg-gray-800/50 rounded-full overflow-hidden"
                                             >
                                                 <div className={`absolute inset-0 ${getStrengthBgColor(passwordStrength)}`} />
                                                 <motion.div
@@ -540,7 +540,7 @@ export default function PasswordChange() {
                                                     {[0, 25, 50, 75, 100].map((point) => (
                                                         <div
                                                             key={point}
-                                                            className="h-full w-px bg-gray-700/50"
+                                                            className="h-full w-px bg-gray-300/50 dark:bg-gray-700/50"
                                                             style={{ marginLeft: `${point}%` }}
                                                         />
                                                     ))}
@@ -563,15 +563,16 @@ export default function PasswordChange() {
                                                 <motion.div
                                                     key={index}
                                                     whileHover={{ scale: 1.05 }}
-                                                    className={`p-3 rounded-xl border-2 flex flex-col items-center gap-1 ${req.met
-                                                            ? "border-emerald-500/30 bg-emerald-500/10"
-                                                            : "border-gray-700/50 bg-gray-800/30"
-                                                        }`}
+                                                    className={`p-3 rounded-xl border-2 flex flex-col items-center gap-1 ${
+                                                        req.met
+                                                            ? "border-emerald-500/30 bg-emerald-500/10 dark:border-emerald-500/30 dark:bg-emerald-500/10"
+                                                            : "border-gray-300/50 bg-gray-100/30 dark:border-gray-700/50 dark:bg-gray-800/30"
+                                                    }`}
                                                 >
-                                                    <div className={`text-lg ${req.met ? "text-emerald-400" : "text-gray-500"}`}>
+                                                    <div className={`text-lg ${req.met ? "text-emerald-600 dark:text-emerald-400" : "text-gray-500 dark:text-gray-500"}`}>
                                                         {req.icon}
                                                     </div>
-                                                    <span className={`text-xs font-medium ${req.met ? "text-emerald-400" : "text-gray-500"}`}>
+                                                    <span className={`text-xs font-medium ${req.met ? "text-emerald-600 dark:text-emerald-400" : "text-gray-500 dark:text-gray-500"}`}>
                                                         {req.text}
                                                     </span>
                                                 </motion.div>
@@ -585,8 +586,8 @@ export default function PasswordChange() {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="flex items-center gap-2 mt-2"
                                     >
-                                        <XCircle className="w-4 h-4 text-red-400" />
-                                        <span className="text-sm text-red-400">{errors.newPassword.message}</span>
+                                        <XCircle className="w-4 h-4 text-red-500 dark:text-red-400" />
+                                        <span className="text-sm text-red-500 dark:text-red-400">{errors.newPassword.message}</span>
                                     </motion.div>
                                 )}
                             </motion.div>
@@ -594,8 +595,8 @@ export default function PasswordChange() {
                             {/* Confirm Password Field */}
                             <motion.div variants={itemVariants} className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                                        <Fingerprint className="w-4 h-4 text-pink-400" />
+                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <Fingerprint className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                         Confirm New Password
                                     </label>
                                     <div className="flex items-center gap-2">
@@ -603,13 +604,13 @@ export default function PasswordChange() {
                                             <motion.div
                                                 initial={{ opacity: 0, scale: 0.8 }}
                                                 animate={{ opacity: 1, scale: 1 }}
-                                                className="flex items-center gap-1 text-emerald-400"
+                                                className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400"
                                             >
                                                 <CheckCircle className="w-4 h-4" />
                                                 <span className="text-xs">Passwords match</span>
                                             </motion.div>
                                         )}
-                                        <span className="text-xs text-gray-500">Must match above</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-500">Must match above</span>
                                     </div>
                                 </div>
                                 <div className="relative group">
@@ -619,9 +620,9 @@ export default function PasswordChange() {
                                         placeholder="Re-enter your new password"
                                         className={cn(
                                             "w-full px-5 py-4 rounded-xl border-2",
-                                            "bg-gray-900/50 backdrop-blur-sm",
-                                            "border-gray-700/50 group-hover:border-pink-500/50",
-                                            "text-gray-100 placeholder-gray-500",
+                                            "bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm",
+                                            "border-gray-300/50 dark:border-gray-700/50 group-hover:border-pink-500/50 dark:group-hover:border-pink-500/50",
+                                            "text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500",
                                             "focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20",
                                             "transition-all duration-300",
                                             errors.confirmNewPassword && "border-red-500/50 focus:border-red-500"
@@ -632,11 +633,11 @@ export default function PasswordChange() {
                                         whileTap={{ scale: 0.9 }}
                                         type="button"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gray-100/50 dark:bg-gray-800/50 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
                                     >
                                         {showConfirmPassword ?
-                                            <EyeOff className="w-4 h-4 text-gray-400" /> :
-                                            <Eye className="w-4 h-4 text-gray-400" />
+                                            <EyeOff className="w-4 h-4 text-gray-600 dark:text-gray-400" /> :
+                                            <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                                         }
                                     </motion.button>
                                     {errors.confirmNewPassword && (
@@ -645,8 +646,8 @@ export default function PasswordChange() {
                                             animate={{ opacity: 1, x: 0 }}
                                             className="absolute -bottom-6 left-0 flex items-center gap-1"
                                         >
-                                            <XCircle className="w-3 h-3 text-red-400" />
-                                            <span className="text-xs text-red-400">{errors.confirmNewPassword.message}</span>
+                                            <XCircle className="w-3 h-3 text-red-500 dark:text-red-400" />
+                                            <span className="text-xs text-red-500 dark:text-red-400">{errors.confirmNewPassword.message}</span>
                                         </motion.div>
                                     )}
                                 </div>
@@ -655,19 +656,19 @@ export default function PasswordChange() {
                             {/* Submit Button Section */}
                             <motion.div
                                 variants={itemVariants}
-                                className="pt-8 border-t border-gray-800/50"
+                                className="pt-8 border-t border-gray-200/50 dark:border-gray-800/50"
                             >
                                 <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
                                     {/* Security Tips */}
                                     <motion.div
                                         variants={itemVariants}
-                                        className="bg-gradient-to-r from-gray-800/30 via-gray-800/20 to-gray-900/30 rounded-xl p-6 border border-gray-700/30 flex-1"
+                                        className="bg-gradient-to-r from-gray-100/30 via-gray-100/20 to-gray-50/30 dark:from-gray-800/30 dark:via-gray-800/20 dark:to-gray-900/30 rounded-xl p-6 border border-gray-200/30 dark:border-gray-700/30 flex-1"
                                     >
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20">
-                                                <Zap className="w-5 h-5 text-blue-400" />
+                                                <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                             </div>
-                                            <h4 className="text-lg font-semibold text-gray-200">Pro Security Tips</h4>
+                                            <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Pro Security Tips</h4>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {[
@@ -681,10 +682,10 @@ export default function PasswordChange() {
                                                 <motion.div
                                                     key={index}
                                                     whileHover={{ x: 5 }}
-                                                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 transition-colors"
+                                                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-200/30 dark:bg-gray-800/30 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 transition-colors"
                                                 >
                                                     <span className="text-xl">{item.emoji}</span>
-                                                    <span className="text-sm text-gray-300">{item.tip}</span>
+                                                    <span className="text-sm text-gray-700 dark:text-gray-300">{item.tip}</span>
                                                 </motion.div>
                                             ))}
                                         </div>
@@ -696,10 +697,10 @@ export default function PasswordChange() {
                                         className="flex flex-col items-center gap-4"
                                     >
                                         <div className="text-center space-y-2">
-                                            <p className="text-sm text-gray-400">
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
                                                 Click the security shield to change your password
                                             </p>
-                                            <p className="text-xs text-gray-500">
+                                            <p className="text-xs text-gray-500 dark:text-gray-500">
                                                 All security requirements must be met
                                             </p>
                                         </div>
@@ -742,7 +743,7 @@ export default function PasswordChange() {
                                             <motion.div
                                                 whileHover={{
                                                     rotate: 180,
-                                                    backgroundColor: ["rgba(31, 41, 55, 0.5)", "rgba(55, 48, 163, 0.5)"],
+                                                    backgroundColor: ["rgba(243, 244, 246, 0.5)", "rgba(224, 231, 255, 0.5)"],
                                                 }}
                                                 transition={{
                                                     duration: 0.4,
@@ -750,8 +751,8 @@ export default function PasswordChange() {
                                                 }}
                                                 className={cn(
                                                     "relative p-4 rounded-2xl",
-                                                    "bg-gradient-to-br from-gray-800/50 to-gray-900/50",
-                                                    "border-2 border-gray-700/50",
+                                                    "bg-gradient-to-br from-gray-100/50 to-gray-200/50 dark:from-gray-800/50 dark:to-gray-900/50",
+                                                    "border-2 border-gray-300/50 dark:border-gray-700/50",
                                                     "backdrop-blur-sm",
                                                     "group-hover:border-purple-500/50",
                                                     "transition-all duration-300",
@@ -764,7 +765,7 @@ export default function PasswordChange() {
                                                     initial={{ x: "-100%" }}
                                                     whileHover={{ x: "100%" }}
                                                     transition={{ duration: 0.5 }}
-                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"
                                                 />
 
                                                 {/* Icon */}
@@ -774,7 +775,7 @@ export default function PasswordChange() {
                                                             animate={{ rotate: 360 }}
                                                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                                                         >
-                                                            <RefreshCw className="w-8 h-8 text-blue-400" />
+                                                            <RefreshCw className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                                                         </motion.div>
                                                     ) : (
                                                         <>
@@ -792,7 +793,7 @@ export default function PasswordChange() {
                                                             />
 
                                                             {/* Main icon */}
-                                                            <Shield className="w-8 h-8 text-green-400 relative z-10" />
+                                                            <Shield className="w-8 h-8 text-green-600 dark:text-green-400 relative z-10" />
 
                                                             {/* Animated checkmark on success */}
                                                             {!isDirty && (
@@ -801,7 +802,7 @@ export default function PasswordChange() {
                                                                     animate={{ scale: 1 }}
                                                                     className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center"
                                                                 >
-                                                                    <span className="text-xs">!</span>
+                                                                    <span className="text-xs text-white">!</span>
                                                                 </motion.div>
                                                             )}
                                                         </>
@@ -814,8 +815,8 @@ export default function PasswordChange() {
                                                     whileHover={{ opacity: 1, y: 0 }}
                                                     className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 whitespace-nowrap"
                                                 >
-                                                    <div className="px-3 py-2 rounded-lg bg-gray-900/90 backdrop-blur-sm border border-gray-700/50">
-                                                        <p className="text-xs font-medium text-white">
+                                                    <div className="px-3 py-2 rounded-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
+                                                        <p className="text-xs font-medium text-gray-800 dark:text-white">
                                                             {isDirty ? "Click to secure password" : "Fill all fields first"}
                                                         </p>
                                                     </div>
@@ -830,12 +831,12 @@ export default function PasswordChange() {
                                                     initial={{ opacity: 0, y: -10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     exit={{ opacity: 0, y: -10 }}
-                                                    className="flex items-center gap-2 text-sm text-blue-400"
+                                                    className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400"
                                                 >
                                                     <motion.div
                                                         animate={{ rotate: 360 }}
                                                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                        className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full"
+                                                        className="w-4 h-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full"
                                                     />
                                                     <span>Encrypting and securing your new password...</span>
                                                 </motion.div>
@@ -847,14 +848,14 @@ export default function PasswordChange() {
                                             <motion.div
                                                 initial={{ opacity: 0, scale: 0.8 }}
                                                 animate={{ opacity: 1, scale: 1 }}
-                                                className="text-xs text-gray-400 text-center space-y-1"
+                                                className="text-xs text-gray-600 dark:text-gray-400 text-center space-y-1"
                                             >
                                                 <div className="flex items-center justify-center gap-2">
                                                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                                                     <span>Ready to update security</span>
                                                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                                                 </div>
-                                                <p className="text-gray-500">256-bit encryption enabled</p>
+                                                <p className="text-gray-500 dark:text-gray-500">256-bit encryption enabled</p>
                                             </motion.div>
                                         )}
                                     </motion.div>
@@ -886,14 +887,17 @@ export default function PasswordChange() {
                     caret-color: #8b5cf6;
                 }
                 
-                /* Custom scrollbar */
+                /* Custom scrollbar - light mode */
                 ::-webkit-scrollbar {
                     width: 8px;
                 }
                 
                 ::-webkit-scrollbar-track {
+                    background: rgba(229, 231, 235, 0.5);
+                }
+                
+                .dark ::-webkit-scrollbar-track {
                     background: rgba(31, 41, 55, 0.5);
-                    border-radius: 4px;
                 }
                 
                 ::-webkit-scrollbar-thumb {
