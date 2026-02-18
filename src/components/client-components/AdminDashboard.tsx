@@ -18,8 +18,10 @@ import {
     Database,
     Download,
     MoreVertical,
+    Loader2,
+    CheckCircle2,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
     BarChart,
     Bar,
@@ -35,12 +37,108 @@ import {
     Area,
 } from "recharts";
 import { useTheme } from "next-themes";
+import { getUserInfo } from "@/utils/helper/userFromToken";
+import {
+    useGetUserPaymentsQuery,
+    useGetClientSMSQuery,
+    useCreateSMSMutation
+} from "@/redux/api/sms-configurations/smsApi";
+import { toast } from "react-hot-toast";
 
 const AdminDashboard = () => {
     const [timeRange, setTimeRange] = useState("monthly");
     const [isLoading, setIsLoading] = useState(true);
     const { theme, systemTheme } = useTheme();
     const [, setMounted] = useState(false);
+    const [user, setUser] = useState(null);
+    const [configCreated, setConfigCreated] = useState(false);
+    const [showConfigSuccess, setShowConfigSuccess] = useState(false);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const userInfo = await getUserInfo();
+            setUser(userInfo);
+        };
+        fetchUser();
+    }, []);
+
+    const { data: paymentsData, isLoading: userPaymentLoading, refetch } = useGetUserPaymentsQuery(user?.id, {
+        skip: !user?.id,
+        pollingInterval: 30000,
+    });
+
+    // Get user's SMS configurations
+    const { data: smsConfigs, isLoading: smsConfigsLoading } = useGetClientSMSQuery(
+        { clientId: user?.id, limit: 1 },
+        { skip: !user?.id }
+    );
+
+    // Create SMS config mutation
+    const [createSMS, { isLoading: isCreatingConfig }] = useCreateSMSMutation();
+
+    // Auto-create SMS configuration if user has balance > 1 and no config exists
+    useEffect(() => {
+        const createDefaultConfig = async () => {
+            // Check if user exists and payments data is available
+            if (!user?.id || !paymentsData?.data?.transactions || configCreated) {
+                return;
+            }
+
+            // Calculate total balance from completed transactions
+            const totalBalance = paymentsData.data.transactions
+                .filter(t => t.status === 'completed')
+                .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+            console.log('Total Balance:', totalBalance);
+
+            // Check if balance is more than 1 taka
+            if (totalBalance > 1) {
+                // Check if user already has any SMS configuration
+                if (!smsConfigsLoading && smsConfigs?.data?.length === 0) {
+                    try {
+                        // Create default SMS configuration
+                        const smsConfigData = {
+                            appName: "Default SMS Gateway",
+                            apiKey: "C400102369708eca4d1604.85945999",
+                            type: "unicode" as const,
+                            senderId: "8809601017931",
+                            message: "Welcome! This is a demo sms placeholder.",
+                            status: true,
+                            clientId: user.id
+                        };
+
+                        console.log('Creating default SMS config for user:', user.id);
+
+                        await createSMS({
+                            clientId: user.id,
+                            data: smsConfigData
+                        }).unwrap();
+
+                        setConfigCreated(true);
+                        setShowConfigSuccess(true);
+                        toast.success('Default SMS configuration created successfully!');
+
+                        // Hide success message after 5 seconds
+                        setTimeout(() => {
+                            setShowConfigSuccess(false);
+                        }, 5000);
+
+                        // Refetch payments data
+                        refetch();
+                    } catch (error) {
+                        console.error('Failed to create SMS config:', error);
+                        toast.error('Failed to create default SMS configuration');
+                    }
+                } else if (smsConfigs?.data?.length > 0) {
+                    // User already has config, set flag to prevent future attempts
+                    setConfigCreated(true);
+                    console.log('User already has SMS configuration, skipping creation');
+                }
+            }
+        };
+
+        createDefaultConfig();
+    }, [user, paymentsData, smsConfigs, smsConfigsLoading, createSMS, refetch, configCreated]);
 
     // Handle theme mounting
     useEffect(() => {
@@ -54,6 +152,34 @@ const AdminDashboard = () => {
         const timer = setTimeout(() => setIsLoading(false), 1000);
         return () => clearTimeout(timer);
     }, []);
+
+    // Calculate user-specific stats from payments data
+    const calculateUserStats = () => {
+        if (!paymentsData?.data?.transactions) {
+            return {
+                totalBalance: 0,
+                completedTransactions: 0,
+                failedTransactions: 0,
+                pendingTransactions: 0,
+                lastTransactionDate: null
+            };
+        }
+
+        const transactions = paymentsData.data.transactions;
+        const completed = transactions.filter(t => t.status === 'completed');
+        const failed = transactions.filter(t => t.status === 'failed');
+        const pending = transactions.filter(t => t.status === 'pending');
+
+        return {
+            totalBalance: completed.reduce((sum, t) => sum + parseFloat(t.amount), 0),
+            completedTransactions: completed.length,
+            failedTransactions: failed.length,
+            pendingTransactions: pending.length,
+            lastTransactionDate: completed.length > 0 ? completed[0].completedAt : null
+        };
+    };
+
+    const userStats = calculateUserStats();
 
     // Static data for charts
     const smsVolumeData = [
@@ -92,48 +218,14 @@ const AdminDashboard = () => {
         { country: "Germany", sms: 900, color: "#EF4444" },
     ];
 
-    const recentActivities = [
-        {
-            id: 1,
-            user: "John Smith",
-            action: "Sent bulk SMS",
-            target: "10,000 users",
-            time: "10 min ago",
-            status: "success",
-        },
-        {
-            id: 2,
-            user: "Sarah Johnson",
-            action: "Created new template",
-            target: "Welcome Message",
-            time: "25 min ago",
-            status: "success",
-        },
-        {
-            id: 3,
-            user: "Mike Wilson",
-            action: "API key regenerated",
-            target: "Production API",
-            time: "1 hour ago",
-            status: "warning",
-        },
-        {
-            id: 4,
-            user: "Emma Davis",
-            action: "Balance topped up",
-            target: "$5,000",
-            time: "2 hours ago",
-            status: "success",
-        },
-        {
-            id: 5,
-            user: "Alex Brown",
-            action: "Failed SMS delivery",
-            target: "2,000 messages",
-            time: "3 hours ago",
-            status: "error",
-        },
-    ];
+    const recentActivities = paymentsData?.data?.transactions?.map(t => ({
+        id: t.id,
+        user: "You",
+        action: `Payment ${t.status}`,
+        target: `BDT ${t.amount}`,
+        time: new Date(t.createdAt).toLocaleString(),
+        status: t.status === 'completed' ? 'success' : t.status === 'failed' ? 'error' : 'warning'
+    })) || [];
 
     const topUsers = [
         { id: 1, name: "Enterprise Corp", smsSent: 12500, revenue: 42500 },
@@ -143,73 +235,73 @@ const AdminDashboard = () => {
         { id: 5, name: "EduTech Inc", smsSent: 5400, revenue: 18300 },
     ];
 
-    // Stats cards data with theme-aware colors
+    // Stats cards data with user-specific stats
     const stats = [
         {
-            title: "Total SMS Sent",
-            value: "48,256",
-            change: "+12.5%",
-            trend: "up",
-            icon: <Send className="h-6 w-6" />,
+            title: "Total Balance",
+            value: `BDT ${userStats.totalBalance.toFixed(2)}`,
+            change: userStats.completedTransactions > 0 ? "+" + userStats.completedTransactions + " txns" : "0 txns",
+            trend: userStats.completedTransactions > 0 ? "up" : "down",
+            icon: <DollarSign className="h-6 w-6" />,
             color: "bg-blue-500 dark:bg-blue-600",
             textColor: "text-blue-600 dark:text-blue-400",
             bgColor: "bg-blue-50 dark:bg-blue-900/20",
-            description: "This month",
+            description: "Total completed payments",
         },
         {
-            title: "Active Users",
-            value: "1,254",
-            change: "+5.2%",
-            trend: "up",
-            icon: <Users className="h-6 w-6" />,
+            title: "Completed Transactions",
+            value: userStats.completedTransactions.toString(),
+            change: userStats.completedTransactions > 0 ? "Successful" : "No transactions",
+            trend: userStats.completedTransactions > 0 ? "up" : "down",
+            icon: <CheckCircle className="h-6 w-6" />,
             color: "bg-green-500 dark:bg-green-600",
             textColor: "text-green-600 dark:text-green-400",
             bgColor: "bg-green-50 dark:bg-green-900/20",
-            description: "Currently online",
+            description: "Successful payments",
         },
         {
-            title: "Total Revenue",
-            value: "$165,800",
-            change: "+18.3%",
-            trend: "up",
-            icon: <DollarSign className="h-6 w-6" />,
-            color: "bg-purple-500 dark:bg-purple-600",
-            textColor: "text-purple-600 dark:text-purple-400",
-            bgColor: "bg-purple-50 dark:bg-purple-900/20",
-            description: "Year to date",
-        },
-        {
-            title: "Delivery Rate",
-            value: "96.7%",
-            change: "+2.1%",
-            trend: "up",
-            icon: <CheckCircle className="h-6 w-6" />,
-            color: "bg-emerald-500 dark:bg-emerald-600",
-            textColor: "text-emerald-600 dark:text-emerald-400",
-            bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
-            description: "Success rate",
-        },
-        {
-            title: "Avg Response Time",
-            value: "2.4s",
-            change: "-0.3s",
-            trend: "down",
-            icon: <Clock className="h-6 w-6" />,
-            color: "bg-amber-500 dark:bg-amber-600",
-            textColor: "text-amber-600 dark:text-amber-400",
-            bgColor: "bg-amber-50 dark:bg-amber-900/20",
-            description: "Gateway response",
-        },
-        {
-            title: "Failed SMS",
-            value: "1,235",
-            change: "-8.7%",
-            trend: "down",
+            title: "Failed Transactions",
+            value: userStats.failedTransactions.toString(),
+            change: userStats.failedTransactions > 0 ? "Failed" : "No failures",
+            trend: userStats.failedTransactions > 0 ? "down" : "up",
             icon: <XCircle className="h-6 w-6" />,
             color: "bg-red-500 dark:bg-red-600",
             textColor: "text-red-600 dark:text-red-400",
             bgColor: "bg-red-50 dark:bg-red-900/20",
-            description: "This month",
+            description: "Failed payment attempts",
+        },
+        {
+            title: "Pending Transactions",
+            value: userStats.pendingTransactions.toString(),
+            change: userStats.pendingTransactions > 0 ? "Awaiting" : "None pending",
+            trend: userStats.pendingTransactions > 0 ? "up" : "down",
+            icon: <Clock className="h-6 w-6" />,
+            color: "bg-amber-500 dark:bg-amber-600",
+            textColor: "text-amber-600 dark:text-amber-400",
+            bgColor: "bg-amber-50 dark:bg-amber-900/20",
+            description: "Pending payments",
+        },
+        {
+            title: "SMS Configuration",
+            value: smsConfigs?.data?.length > 0 ? "Active" : "Not Set",
+            change: smsConfigs?.data?.length > 0 ? "Configured" : "Auto-setup pending",
+            trend: smsConfigs?.data?.length > 0 ? "up" : "down",
+            icon: <Send className="h-6 w-6" />,
+            color: "bg-purple-500 dark:bg-purple-600",
+            textColor: "text-purple-600 dark:text-purple-400",
+            bgColor: "bg-purple-50 dark:bg-purple-900/20",
+            description: smsConfigs?.data?.length > 0 ? "SMS gateway ready" : "Will auto-create after payment",
+        },
+        {
+            title: "Last Payment",
+            value: userStats.lastTransactionDate ? new Date(userStats.lastTransactionDate).toLocaleDateString() : "No payments",
+            change: userStats.completedTransactions > 0 ? "Recent" : "Never",
+            trend: userStats.completedTransactions > 0 ? "up" : "down",
+            icon: <Calendar className="h-6 w-6" />,
+            color: "bg-emerald-500 dark:bg-emerald-600",
+            textColor: "text-emerald-600 dark:text-emerald-400",
+            bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
+            description: "Most recent payment",
         },
     ];
 
@@ -230,7 +322,7 @@ const AdminDashboard = () => {
     const chartTooltipBg = currentTheme === "dark" ? "#1F2937" : "#FFFFFF";
     const chartTooltipBorder = currentTheme === "dark" ? "#374151" : "#E5E7EB";
 
-    if (isLoading) {
+    if (isLoading || userPaymentLoading || smsConfigsLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
@@ -248,14 +340,56 @@ const AdminDashboard = () => {
             {/* Header */}
             <motion.div className="mb-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
+                    <div className="flex-1">
                         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
-                            Admin Dashboard
+                            Welcome back, {user?.name || 'Admin'}!
                         </h1>
                         <p className="text-gray-600 dark:text-gray-400 mt-2">
-                            Overview of your SMS platform performance
+                            Your personal dashboard overview
                         </p>
                     </div>
+                    
+                    {/* Professional Loader/Success Message */}
+                    <AnimatePresence mode="wait">
+                        {isCreatingConfig && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg border border-blue-200 dark:border-blue-800"
+                            >
+                                <Loader2 className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin" />
+                                <div>
+                                    <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                                        Configuring SMS Gateway
+                                    </p>
+                                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                                        Setting up your default configuration...
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {showConfigSuccess && !isCreatingConfig && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-lg border border-green-200 dark:border-green-800"
+                            >
+                                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                <div>
+                                    <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                                        SMS Gateway Ready
+                                    </p>
+                                    <p className="text-xs text-green-600 dark:text-green-400">
+                                        Configuration completed successfully
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
                             <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" />
@@ -286,7 +420,6 @@ const AdminDashboard = () => {
                 {stats.map((stat, index) => (
                     <motion.div
                         key={index}
-
                         whileHover={{ y: -5, transition: { duration: 0.2 } }}
                         className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-gray-900 transition-shadow"
                     >
@@ -295,10 +428,11 @@ const AdminDashboard = () => {
                                 {stat.icon}
                             </div>
                             <div
-                                className={`flex items-center gap-1 text-sm font-medium ${stat.trend === "up"
+                                className={`flex items-center gap-1 text-sm font-medium ${
+                                    stat.trend === "up"
                                         ? "text-green-600 dark:text-green-400"
                                         : "text-red-600 dark:text-red-400"
-                                    }`}
+                                }`}
                             >
                                 {stat.trend === "up" ? (
                                     <ArrowUpRight className="h-4 w-4" />
@@ -325,7 +459,6 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* SMS Volume Chart */}
                 <motion.div
-
                     className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center justify-between mb-6">
@@ -393,7 +526,6 @@ const AdminDashboard = () => {
 
                 {/* Revenue Chart */}
                 <motion.div
-
                     className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center justify-between mb-6">
@@ -470,7 +602,6 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* Gateway Distribution */}
                 <motion.div
-
                     className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 lg:col-span-1"
                 >
                     <div className="flex items-center justify-between mb-6">
@@ -518,16 +649,15 @@ const AdminDashboard = () => {
 
                 {/* Recent Activities */}
                 <motion.div
-
                     className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 lg:col-span-2"
                 >
                     <div className="flex items-center justify-between mb-6">
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                Recent Activities
+                                Recent Payment Activities
                             </h3>
                             <p className="text-gray-500 dark:text-gray-400 text-sm">
-                                Latest system activities
+                                Your latest payment transactions
                             </p>
                         </div>
                         <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium">
@@ -535,48 +665,55 @@ const AdminDashboard = () => {
                         </button>
                     </div>
                     <div className="space-y-4">
-                        {recentActivities.map((activity) => (
-                            <motion.div
-                                key={activity.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        className={`p-2 rounded-full ${activity.status === "success"
-                                                ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-                                                : activity.status === "warning"
+                        {recentActivities.length > 0 ? (
+                            recentActivities.slice(0, 5).map((activity) => (
+                                <motion.div
+                                    key={activity.id}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className={`p-2 rounded-full ${
+                                                activity.status === "success"
+                                                    ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                                                    : activity.status === "warning"
                                                     ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400"
                                                     : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
                                             }`}
-                                    >
-                                        {activity.status === "success" ? (
-                                            <CheckCircle className="h-5 w-5" />
-                                        ) : activity.status === "warning" ? (
-                                            <Clock className="h-5 w-5" />
-                                        ) : (
-                                            <XCircle className="h-5 w-5" />
-                                        )}
+                                        >
+                                            {activity.status === "success" ? (
+                                                <CheckCircle className="h-5 w-5" />
+                                            ) : activity.status === "warning" ? (
+                                                <Clock className="h-5 w-5" />
+                                            ) : (
+                                                <XCircle className="h-5 w-5" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                                                {activity.user}{" "}
+                                                <span className="font-normal text-gray-600 dark:text-gray-400">
+                                                    • {activity.action}
+                                                </span>
+                                            </p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                {activity.target} • {activity.time}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-medium text-gray-900 dark:text-gray-100">
-                                            {activity.user}{" "}
-                                            <span className="font-normal text-gray-600 dark:text-gray-400">
-                                                • {activity.action}
-                                            </span>
-                                        </p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            {activity.target} • {activity.time}
-                                        </p>
-                                    </div>
-                                </div>
-                                <button className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-                                    <MoreVertical className="h-5 w-5" />
-                                </button>
-                            </motion.div>
-                        ))}
+                                    <button className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                                        <MoreVertical className="h-5 w-5" />
+                                    </button>
+                                </motion.div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                No recent activities found
+                            </div>
+                        )}
                     </div>
                 </motion.div>
             </div>
@@ -585,7 +722,6 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Top Users */}
                 <motion.div
-
                     className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center justify-between mb-6">
@@ -633,7 +769,6 @@ const AdminDashboard = () => {
 
                 {/* Country Distribution */}
                 <motion.div
-
                     className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center justify-between mb-6">
