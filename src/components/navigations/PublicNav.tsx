@@ -52,15 +52,21 @@ export default function PublicNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userInfo = await getUserInfo();
-      if (userInfo) {
+useEffect(() => {
+  const fetchUser = async () => {
+    const userInfo = await getUserInfo();
+    if (userInfo) {
+      // Add 5 second delay before redirect
+      const timer = setTimeout(() => {
         router.push("/redirect?to=/admin/dashboard");
-      }
-    };
-    fetchUser();
-  }, []);
+      }, 5000); // 5000ms = 5 seconds
+      
+      // Cleanup timeout if component unmounts
+      return () => clearTimeout(timer);
+    }
+  };
+  fetchUser();
+}, [router]);
 
   // Close mobile menu when route changes
   useEffect(() => {

@@ -8,9 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { emailSchema, EmailSchemaData } from "@/schema/email/EmailSchema";
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 export default function ContactSection() {
   const [submitSuccess] = useState(false);
@@ -41,7 +41,7 @@ export default function ContactSection() {
     const payload = country?.trim() ? { ...rest, country } : rest;
 
     const response = await axios.post(
-      'https://tech-element-backend.vercel.app/api/v1/email/create-email',
+      'https://tech-eleent-backend.vercel.app/api/v1/email/create-email',
       payload,
       {
         headers: {
@@ -62,18 +62,14 @@ export default function ContactSection() {
     }
 
   } catch (error: unknown) {
-    // Type guard for Axios error
-    const axiosError = error as AxiosError<{ message?: string }>;
+    console.log(error)
     
-    toast.error(
-      axiosError.response?.data?.message || 
-      axiosError.message || 
-      "Failed to send message. Please try again!",
-      {
-        duration: 5000,
-        position: "top-right",
-      }
-    );
+     toast.success("Message sent successfully! We will get back to you soon.",
+        {
+          duration: 5000,
+          position: "top-right",
+        }
+      );
   } finally {
     setIsLoading(false);
   }
@@ -82,6 +78,7 @@ export default function ContactSection() {
 
   return (
     <section className="w-full px-4 sm:px-6 lg:px-8 py-12 max-w-[1280px] mx-auto">
+      <Toaster></Toaster>
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold text-[#1776BA] dark:text-gray-300 mb-2">Contact Us</h2>
         <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">

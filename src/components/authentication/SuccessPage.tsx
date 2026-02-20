@@ -71,7 +71,7 @@ export default function PaymentSuccessPage() {
                 if (prev <= 1) {
                     clearInterval(timer);
                     sessionStorage.removeItem('paymentSuccessReloaded');
-                    router.push('/login');
+                    router.push('/admin/dashboard');
                 }
                 return prev - 1;
             });

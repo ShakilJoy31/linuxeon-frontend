@@ -125,7 +125,7 @@ export default function Footer() {
       </div>
 
       {/* Newsletter Subscription */}
-      <div className="max-w-[1280px] mx-auto mt-8 md:mt-12 px-4 sm:px-6">
+      <div className="container mx-auto mt-8 md:mt-12 px-4 sm:px-6">
         <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-6 md:p-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
@@ -149,7 +149,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="max-w-[1280px] mx-auto mt-8 md:mt-10 border-t border-gray-400 flex flex-col md:flex-row justify-between items-center py-4 px-4 sm:px-6">
+      <div className="container mx-auto mt-8 md:mt-10 border-t border-gray-400 flex flex-col md:flex-row justify-between items-center py-4 px-4 sm:px-6">
         <Paragraph className="flex items-center gap-1 mb-2 md:mb-0 text-[14px] ">
           © {new Date().getFullYear()} SMS Platform. All Rights Reserved.
         </Paragraph>

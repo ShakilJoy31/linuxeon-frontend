@@ -19,6 +19,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useProcessPaymentMutation, useRegisterClientMutation } from '@/redux/api/authentication/authApi';
 import { useAddThumbnailMutation } from '@/redux/features/file/fileApi';
+import { shareWithCookies } from '@/utils/helper/shareWithCookies';
+import { appConfiguration } from '@/utils/constant/appConfiguration';
 
 
 // Schema validation for multi-step form
@@ -207,43 +209,43 @@ export default function RegisterForm() {
         setCurrentStep(prev => Math.max(prev - 1, 1));
     };
 
-const handlePayment = async () => {
-    setIsProcessingPayment(true);
+    const handlePayment = async () => {
+        setIsProcessingPayment(true);
 
-    try {
-        const response = await processPayment({
-            userId: registeredUserData?.id,
-            amount: 50,
-            paymentMethod: 'sslcommerz',
-            payload: {
-                fullName: registeredUserData?.fullName,
-                photo: registeredUserData?.photo || '',
-                dateOfBirth: registeredUserData?.dateOfBirth,
-                age: registeredUserData?.age,
-                sex: registeredUserData?.sex,
-                nidOrPassportNo: registeredUserData?.nidOrPassportNo,
-                nidPhotoFrontSide: registeredUserData?.nidPhotoFrontSide || '',
-                nidPhotoBackSide: registeredUserData?.nidPhotoBackSide || '',
-                mobileNo: registeredUserData?.mobileNo,
-                email: registeredUserData?.email,
-                password: registeredUserData?.password,
-                role: 'client',
+        try {
+            const response = await processPayment({
+                userId: registeredUserData?.id,
+                amount: 50,
+                paymentMethod: 'sslcommerz',
+                payload: {
+                    fullName: registeredUserData?.fullName,
+                    photo: registeredUserData?.photo || '',
+                    dateOfBirth: registeredUserData?.dateOfBirth,
+                    age: registeredUserData?.age,
+                    sex: registeredUserData?.sex,
+                    nidOrPassportNo: registeredUserData?.nidOrPassportNo,
+                    nidPhotoFrontSide: registeredUserData?.nidPhotoFrontSide || '',
+                    nidPhotoBackSide: registeredUserData?.nidPhotoBackSide || '',
+                    mobileNo: registeredUserData?.mobileNo,
+                    email: registeredUserData?.email,
+                    password: registeredUserData?.password,
+                    role: 'client',
+                }
+            }).unwrap();
+
+            console.log('Payment Response:', response); // You can see the response here
+
+            if (response.success && response.data?.gatewayUrl) {
+                window.location.href = response.data.gatewayUrl;
+            } else {
+                throw new Error(response.message || 'Payment initiation failed');
             }
-        }).unwrap();
-
-        console.log('Payment Response:', response); // You can see the response here
-
-        if (response.success && response.data?.gatewayUrl) {
-            window.location.href = response.data.gatewayUrl;
-        } else {
-            throw new Error(response.message || 'Payment initiation failed');
+        } catch (error) {
+            console.error('Payment error:', error);
+            toast.error(error?.data?.message || error?.message || 'Payment failed. Please try again.');
+            setIsProcessingPayment(false);
         }
-    } catch (error) {
-        console.error('Payment error:', error);
-        toast.error(error?.data?.message || error?.message || 'Payment failed. Please try again.');
-        setIsProcessingPayment(false);
-    }
-};
+    };
 
     const onSubmit = async (data: RegisterFormData) => {
         setErrorMessage(null);
@@ -276,11 +278,48 @@ const handlePayment = async () => {
 
             const response = await registerClient(payload).unwrap();
 
-            if (response.message === 'Client created successfully!') {
-                // Store user data and show payment modal
-                setRegisteredUserData(response.data || payload);
-                setShowPaymentModal(true);
-                toast.success('Registration successful! Please complete payment to activate your account.');
+            if (response.success) {
+                // Set tokens in cookies if they're provided in the response
+                if (response.data?.tokens?.accessToken) {
+                    const { accessToken, refreshToken } = response.data.tokens;
+
+                    // Set tokens in cookies using shareWithCookies
+                    const tokenName = `${appConfiguration.appCode}token`;
+                    const refreshTokenName = `${appConfiguration.appCode}refreshToken`;
+
+                    // Set tokens with 1 day expiry for access token, 7 days for refresh token
+                    shareWithCookies("set", tokenName, 1440, accessToken); // 1 day
+                    shareWithCookies("set", refreshTokenName, 10080, refreshToken); // 7 days
+
+                    // Verify cookies were set
+                    const verifyAccessToken = shareWithCookies("get", tokenName, 0);
+                    const verifyRefreshToken = shareWithCookies("get", refreshTokenName, 0);
+
+                    console.log('Registration cookies set verification:', {
+                        accessTokenSet: !!verifyAccessToken,
+                        refreshTokenSet: !!verifyRefreshToken
+                    });
+                }
+
+                // Check account status and show appropriate message
+                if (response.data?.accountInfo?.status === 'pending') {
+                    toast.success(response.data.accountInfo.message || 'Registration successful! Your account is pending approval.');
+
+                    // Store user data but don't redirect to dashboard
+                    setRegisteredUserData(response.data || payload);
+                    setShowPaymentModal(true);
+                } else {
+                    // If account is active immediately (unlikely with pending status)
+                    toast.success('Registration successful!');
+
+                    // Redirect based on user role
+                    const userRole = response.data?.role?.toLowerCase();
+                    if (userRole === 'admin' || userRole === 'super_admin') {
+                        router.push(`/redirect?to=/admin/dashboard`);
+                    } else {
+                        router.push(`/redirect?to=/dashboard`);
+                    }
+                }
             } else {
                 throw new Error(response.message || 'Registration failed');
             }

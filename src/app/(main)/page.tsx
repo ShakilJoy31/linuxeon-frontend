@@ -4,7 +4,7 @@ import IndustryExpertise from "@/components/home/IndustryExpertise";
 import KeyServices from "@/components/home/KeyServices";
 import MeetingComponent from "@/components/home/MeetingComponent";
 import PortfolioSlider from "@/components/home/PortfolioSlider";
-import ReviewSection from "@/components/home/ReviewSection";
+// import ReviewSection from "@/components/home/ReviewSection";
 import StartBuilding from "@/components/home/StartBuilding";
 import TrustedByTeam from "@/components/home/TrustedByTeam";
 import WhyTechElement from "@/components/home/WhyTechElement";
@@ -39,9 +39,6 @@ const Home = () => {
       <MeetingComponent></MeetingComponent>
       <WhyTechElement></WhyTechElement>
       <TrustedByTeam></TrustedByTeam>
-      <div className="lg:mx-4 md:mx-2 mx-1">
-        <ReviewSection></ReviewSection>
-      </div>
       <StartBuilding></StartBuilding>
     </div>
   )

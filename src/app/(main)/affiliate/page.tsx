@@ -4,7 +4,7 @@ import ReferralLink from "@/components/affiliate/ReferralLink";
 import Steps from "@/components/affiliate/Steps";
 // import Image from "next/image";
 // import affiliateBenifit from '@/assets/Affiliate/affiliate-benifit.png'
-import ReviewSection from "@/components/home/ReviewSection";
+// import ReviewSection from "@/components/home/ReviewSection";
 import PricingFAQ from "@/components/pricing/PricingFAQ";
 import InfoCard from "@/components/affiliate/InfoCard";
 import { FaExpandArrowsAlt, FaWallet } from "react-icons/fa";
@@ -123,10 +123,6 @@ export default function Affiliate() {
                     </div>
                 </div>
             </section>
-
-            <div className="lg:mx-0 mx-1">
-                <ReviewSection />
-            </div>
             <PricingFAQ />
         </div>
     );
