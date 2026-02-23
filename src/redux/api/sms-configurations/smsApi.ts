@@ -205,7 +205,7 @@ export const smsApi = apiSlice.injectEndpoints({
     // Process new payment
     processPayment: builder.mutation<ProcessPaymentResponse, ProcessPaymentRequest>({
       query: (paymentData) => ({
-        url: `/payment/process`,
+        url: `/payment/process-payment`,
         method: 'POST',
         body: paymentData,
       }),

@@ -91,6 +91,14 @@ export const authApi = apiSlice.injectEndpoints({
       providesTags: (result, error, id) => [{ type: 'Client', id }],
     }),
 
+    getPendingClientForAccountActivatoinById: builder.query({
+      query: (id: string) => ({
+        url: `/authentication/get-pending-client-for-account-activation/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: 'Client', id }],
+    }),
+
     deleteClient: builder.mutation({
       query: (id: number) => ({
         url: `/authentication/delete-client/${id}`,
@@ -166,6 +174,7 @@ export const {
   useUpdateClientMutation,
   useGetAllClientsQuery,
   useGetClientByIdQuery,
+  useGetPendingClientForAccountActivatoinByIdQuery,
   useRefreshTokenMutation,
   useDeleteClientMutation,
   useUpdateClientStatusMutation,

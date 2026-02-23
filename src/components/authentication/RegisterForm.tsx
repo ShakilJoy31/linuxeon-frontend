@@ -248,8 +248,12 @@ export default function RegisterForm() {
     };
 
     const onSubmit = async (data: RegisterFormData) => {
+        // Manual validation
+        if (data.password !== data.confirmPassword) {
+            toast.error('Opps! Passwords do not match!');
+            return;
+        }
         setErrorMessage(null);
-
         try {
             // Calculate age from date of birth
             const birthDate = new Date(data.dateOfBirth);
@@ -502,7 +506,11 @@ export default function RegisterForm() {
                             </AnimatePresence>
 
                             {/* Form */}
-                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                            <form onSubmit={handleSubmit(onSubmit, (errors) => {
+                                if (errors.confirmPassword) {
+                                    toast.error(errors.confirmPassword.message);
+                                }
+                            })} className="space-y-6">
                                 <AnimatePresence mode="wait">
                                     {/* Step 1: Personal Information */}
                                     {currentStep === 1 && (

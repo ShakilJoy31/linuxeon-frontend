@@ -10,6 +10,7 @@ import ThemeSwitcher from "../common/ThemeSwitcher";
 import { BarChart3, Globe, Menu, MessageSquare, Users, X } from "lucide-react";
 import LanguageSwitcher from "../reusable-components/LanguageSwitcher";
 import { getUserInfo } from "@/utils/helper/userFromToken";
+import { useGetClientByIdQuery } from "@/redux/api/authentication/authApi";
 
 const navLinks = [
   {
@@ -51,22 +52,28 @@ export default function PublicNav() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [userId, setUserId] = useState(null);
 
-useEffect(() => {
-  const fetchUser = async () => {
-    const userInfo = await getUserInfo();
-    if (userInfo) {
-      // Add 5 second delay before redirect
-      const timer = setTimeout(() => {
-        router.push("/redirect?to=/admin/dashboard");
-      }, 5000); // 5000ms = 5 seconds
-      
-      // Cleanup timeout if component unmounts
-      return () => clearTimeout(timer);
-    }
-  };
-  fetchUser();
-}, [router]);
+  const { data: userData } = useGetClientByIdQuery(userId ? userId : "", {
+    skip: !userId,
+  });
+
+  console.log(userData);
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userInfo = await getUserInfo();
+      if (userInfo) {
+        setUserId(userInfo.id);
+      }
+    };
+    fetchUser();
+  }, [router]);
+
+  if (userData) {
+    router.push("/redirect?to=/admin/dashboard");
+  }
 
   // Close mobile menu when route changes
   useEffect(() => {

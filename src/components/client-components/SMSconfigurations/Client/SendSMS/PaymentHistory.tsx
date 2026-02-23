@@ -58,11 +58,18 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ userId: propUserId }) =
 
     const { data: paymentsData, isLoading, refetch } = useGetUserPaymentsQuery(effectiveUserId, {
         skip: !effectiveUserId,
-        pollingInterval: 30000,
+        pollingInterval: 30000, // This will automatically refetch every 30 seconds
     });
 
+    // Refetch on component mount when userId is available
+    useEffect(() => {
+        if (effectiveUserId) {
+            refetch();
+        }
+    }, [effectiveUserId, refetch]); // Added proper dependencies
+
     // Fetch SMS history to calculate usage
-    const { data: smsHistoryData } = useGetSMSHistoryQuery(
+    const { data: smsHistoryData, refetch: refetchSMS } = useGetSMSHistoryQuery(
         {
             page: 1,
             limit: 1000,
@@ -72,6 +79,13 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ userId: propUserId }) =
             skip: !effectiveUserId,
         }
     );
+
+    // Also refetch SMS history on mount
+    useEffect(() => {
+        if (effectiveUserId) {
+            refetchSMS();
+        }
+    }, [effectiveUserId, refetchSMS]);
 
     const [processRechargePayment] = useProcessRechargePaymentMutation();
 
@@ -381,7 +395,10 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ userId: propUserId }) =
                                 <motion.button
                                     whileHover={{ rotate: 180 }}
                                     whileTap={{ scale: 0.9 }}
-                                    onClick={() => refetch()}
+                                    onClick={() => {
+                                        refetch();
+                                        refetchSMS();
+                                    }}
                                     className="p-2 hover:bg-gray-100 hover:cursor-pointer dark:hover:bg-gray-700 rounded-full transition-colors"
                                 >
                                     <RefreshCw className="w-5 h-5 text-gray-500" />
