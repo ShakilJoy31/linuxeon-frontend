@@ -166,6 +166,19 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
           },
         ],
       },
+       {
+        key: "configuration",
+        icon: <Users size={20} />,
+        label: "Central Configuration",
+        subItems: [
+          {
+            key: "configuration",
+            icon: <Users size={16} />,
+            label: "SMS Configuration",
+            href: "/admin/sms/central-configuration",
+          },
+        ],
+      },
     ];
 
     if (user && user?.role === 'client') {
