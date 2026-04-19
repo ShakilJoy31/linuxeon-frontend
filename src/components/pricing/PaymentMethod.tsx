@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { FaPaypal } from "react-icons/fa";
-import { SiAmazonpay, SiVenmo } from "react-icons/si";
+import { SiVenmo } from "react-icons/si";
 import { MdCreditCard } from "react-icons/md";
 import { RiCashLine } from "react-icons/ri";
 import Button from "../reusable-components/Button";
@@ -15,7 +15,7 @@ export default function PaymentMethod() {
         { id: "cash", label: "Cash on Delivery", icon: <RiCashLine className="text-orange-500 text-2xl sm:text-[32px]" /> },
         { id: "venmo", label: "Venmo", icon: <SiVenmo className="text-blue-500 text-2xl sm:text-[32px]" /> },
         { id: "paypal", label: "PayPal", icon: <FaPaypal className="text-blue-600 text-2xl sm:text-[32px]" /> },
-        { id: "amazon", label: "Amazon Pay", icon: <SiAmazonpay className="text-black dark:text-white text-2xl sm:text-[32px]" /> },
+        { id: "amazon", label: "Amazon Pay", icon: <SiVenmo className="text-black dark:text-white text-2xl sm:text-[32px]" /> },
         { id: "card", label: "Card", icon: <MdCreditCard className="text-orange-500 text-2xl sm:text-[32px]" /> },
     ];
 

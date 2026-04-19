@@ -6,9 +6,7 @@ import {
   Users,
   MessageSquare,
   Send,
-  UserCheck,
   ChevronDown,
-  ExternalLink,
   History,
   Lock,
   X,
@@ -530,20 +528,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               </div>
               <ThemeSwitcher />
             </div>
-
-            <Link
-              href="/admin/profile"
-              onClick={handleMobileClose}
-              className="flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="p-1.5 rounded-md bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors flex-shrink-0">
-                  <UserCheck size={16} className="text-blue-600 dark:text-blue-400" />
-                </div>
-                <span className="text-sm font-medium truncate">Admin Profile</span>
-              </div>
-              <ExternalLink size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 flex-shrink-0" />
-            </Link>
 
             <Link
               href="/admin/change-password"
