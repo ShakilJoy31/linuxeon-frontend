@@ -28,3 +28,5 @@ export const appConfiguration: IConfigurationProps = {
   progressMessage:
     "Thank you for your interest! 🚀 We're currently working on implementing this feature. Stay tuned, as we'll be activating it very soon!",
 };
+
+
